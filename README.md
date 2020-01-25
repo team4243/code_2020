@@ -24,6 +24,15 @@ Excelsior Team 4243 FRC Code 2020
 
 8. Check the status again: 'git status'
 
+# STEPS TO SWITCH BRANCHES
+1. Checkout a branch locally AFTER pulling: 'git checkout branch_name'
+	- See all local branches with 'git branch'
+	
+2. If creating NEW BRANCH: 'git checkout -b new_branch_name'
+
 # Additional GIT Notes
 1. Get any changes from the cloud: 'git pull origin branch_name'
+
 2. If there's any 'merge conflicts' when pulling or pushing, **ask for help
+
+3. To see COMMIT HISTORY: 'git log'
