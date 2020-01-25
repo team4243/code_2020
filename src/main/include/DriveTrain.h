@@ -1,0 +1,36 @@
+#pragma once
+
+#ifndef _H_
+#define _H_
+
+/* MOTOR CONTROLLERS CONFIGURATION */
+#define CHANNEL_TALON_LF_LEADER (0)
+#define CHANNEL_TALON_LR_LEADER (1)
+#define CHANNEL_TALON_RF_LEADER (2)
+#define CHANNEL_TALON_RR_LEADER (3)
+
+#define CHANNEL_TALON_LF_FOLLOWER (0)
+#define CHANNEL_TALON_LR_FOLLOWER (1)
+#define CHANNEL_TALON_RF_FOLLOWER (2)
+#define CHANNEL_TALON_RR_FOLLOWER (3)
+
+/* JOYSTICKS CONFIGURATION */
+#define PORT_JOYSTICK_DRIVER_ONE (0)
+#define JOYSTICK_DEADBAND (0.10)
+
+/* JOYSTICK BUTTON MAPPING*/
+#define BUTTON_CROSS (5)
+#define AXIS_R3_X (2)
+
+/* GYRO CONFIGURATION */
+#define PORT_GYRO (0)
+#define GRO_KV_PER_DEGREE_SECOND (0.0128)
+
+class DriveTrain
+{
+public:
+  void Init();
+  void Drive();
+};
+
+#endif
