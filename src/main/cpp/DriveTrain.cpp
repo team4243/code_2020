@@ -49,6 +49,7 @@ double DeadBand(double axisValue)
 void DriveTrain::Init()
 {
     navX_gyro = new AHRS(SPI::Port::kMXP);
+    navX_gyro->ZeroYaw();
 
     if (WRITE_TALON_CONFIGURATIONS)
         WriteTalonConfigs();
@@ -66,6 +67,7 @@ void DriveTrain::Drive()
     double joystick_Y = DeadBand(-joystick_driver.GetRawAxis(Left_Wheel_Y)) * SPEED_SCALAR;
     double joystick_Z = DeadBand(joystick_driver.GetRawAxis(Right_Wheel_X)) * SPEED_SCALAR;
 
+    //mecanumDrive.DriveCartesian(joystick_X, joystick_Y, joystick_Z);
     mecanumDrive.DriveCartesian(joystick_X, joystick_Y, joystick_Z, (double)navX_gyro->GetYaw());
     // mecanumDrive.DriveCartesian(joystick_X, joystick_Y, joystick_Z);
 
@@ -84,33 +86,19 @@ void DriveTrain::WriteTalonConfigs()
     leftFrontDriveMotor_Leader.Config_kD(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_DERIVATIVE_CTRL);
     leftFrontDriveMotor_Leader.Config_kF(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_FEED_FWD_CTRL);
 
-    leftRearDriveMotor_Leader.ConfigPeakOutputForward(MECANUM_DRIVE_PEAK_OUTPUT_FWD);
-    leftRearDriveMotor_Leader.ConfigPeakOutputReverse(MECANUM_DRIVE_PEAK_OUTPUT_REV);
-    leftRearDriveMotor_Leader.ConfigClosedloopRamp(MECANUM_DRIVE_RAMP_TIME);
-    leftRearDriveMotor_Leader.Config_kP(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_PROPORTIONAL_CTRL);
-    leftRearDriveMotor_Leader.Config_kD(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_DERIVATIVE_CTRL);
-    leftRearDriveMotor_Leader.Config_kF(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_FEED_FWD_CTRL);
-
-    rightFrontDriveMotor_Leader.ConfigPeakOutputForward(MECANUM_DRIVE_PEAK_OUTPUT_FWD);
-    rightFrontDriveMotor_Leader.ConfigPeakOutputReverse(MECANUM_DRIVE_PEAK_OUTPUT_REV);
-    rightFrontDriveMotor_Leader.ConfigClosedloopRamp(MECANUM_DRIVE_RAMP_TIME);
-    rightFrontDriveMotor_Leader.Config_kP(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_PROPORTIONAL_CTRL);
-    rightFrontDriveMotor_Leader.Config_kD(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_DERIVATIVE_CTRL);
-    rightFrontDriveMotor_Leader.Config_kF(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_FEED_FWD_CTRL);
-
-    rightRearDriveMotor_Leader.ConfigPeakOutputForward(MECANUM_DRIVE_PEAK_OUTPUT_FWD);
-    rightRearDriveMotor_Leader.ConfigPeakOutputReverse(MECANUM_DRIVE_PEAK_OUTPUT_REV);
-    rightRearDriveMotor_Leader.ConfigClosedloopRamp(MECANUM_DRIVE_RAMP_TIME);
-    rightRearDriveMotor_Leader.Config_kP(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_PROPORTIONAL_CTRL);
-    rightRearDriveMotor_Leader.Config_kD(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_DERIVATIVE_CTRL);
-    rightRearDriveMotor_Leader.Config_kF(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_FEED_FWD_CTRL);
-
     leftFrontDriveMotor_Follower.ConfigPeakOutputForward(MECANUM_DRIVE_PEAK_OUTPUT_FWD);
     leftFrontDriveMotor_Follower.ConfigPeakOutputReverse(MECANUM_DRIVE_PEAK_OUTPUT_REV);
     leftFrontDriveMotor_Follower.ConfigClosedloopRamp(MECANUM_DRIVE_RAMP_TIME);
     leftFrontDriveMotor_Follower.Config_kP(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_PROPORTIONAL_CTRL);
     leftFrontDriveMotor_Follower.Config_kD(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_DERIVATIVE_CTRL);
     leftFrontDriveMotor_Follower.Config_kF(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_FEED_FWD_CTRL);
+
+    leftRearDriveMotor_Leader.ConfigPeakOutputForward(MECANUM_DRIVE_PEAK_OUTPUT_FWD);
+    leftRearDriveMotor_Leader.ConfigPeakOutputReverse(MECANUM_DRIVE_PEAK_OUTPUT_REV);
+    leftRearDriveMotor_Leader.ConfigClosedloopRamp(MECANUM_DRIVE_RAMP_TIME);
+    leftRearDriveMotor_Leader.Config_kP(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_PROPORTIONAL_CTRL);
+    leftRearDriveMotor_Leader.Config_kD(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_DERIVATIVE_CTRL);
+    leftRearDriveMotor_Leader.Config_kF(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_FEED_FWD_CTRL);
 
     leftRearDriveMotor_Follower.ConfigPeakOutputForward(MECANUM_DRIVE_PEAK_OUTPUT_FWD);
     leftRearDriveMotor_Follower.ConfigPeakOutputReverse(MECANUM_DRIVE_PEAK_OUTPUT_REV);
@@ -119,12 +107,26 @@ void DriveTrain::WriteTalonConfigs()
     leftRearDriveMotor_Follower.Config_kD(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_DERIVATIVE_CTRL);
     leftRearDriveMotor_Follower.Config_kF(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_FEED_FWD_CTRL);
 
+    rightFrontDriveMotor_Leader.ConfigPeakOutputForward(MECANUM_DRIVE_PEAK_OUTPUT_FWD);
+    rightFrontDriveMotor_Leader.ConfigPeakOutputReverse(MECANUM_DRIVE_PEAK_OUTPUT_REV);
+    rightFrontDriveMotor_Leader.ConfigClosedloopRamp(MECANUM_DRIVE_RAMP_TIME);
+    rightFrontDriveMotor_Leader.Config_kP(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_PROPORTIONAL_CTRL);
+    rightFrontDriveMotor_Leader.Config_kD(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_DERIVATIVE_CTRL);
+    rightFrontDriveMotor_Leader.Config_kF(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_FEED_FWD_CTRL);
+
     rightFrontDriveMotor_Follower.ConfigPeakOutputForward(MECANUM_DRIVE_PEAK_OUTPUT_FWD);
     rightFrontDriveMotor_Follower.ConfigPeakOutputReverse(MECANUM_DRIVE_PEAK_OUTPUT_REV);
     rightFrontDriveMotor_Follower.ConfigClosedloopRamp(MECANUM_DRIVE_RAMP_TIME);
     rightFrontDriveMotor_Follower.Config_kP(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_PROPORTIONAL_CTRL);
     rightFrontDriveMotor_Follower.Config_kD(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_DERIVATIVE_CTRL);
     rightFrontDriveMotor_Follower.Config_kF(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_FEED_FWD_CTRL);
+
+    rightRearDriveMotor_Leader.ConfigPeakOutputForward(MECANUM_DRIVE_PEAK_OUTPUT_FWD);
+    rightRearDriveMotor_Leader.ConfigPeakOutputReverse(MECANUM_DRIVE_PEAK_OUTPUT_REV);
+    rightRearDriveMotor_Leader.ConfigClosedloopRamp(MECANUM_DRIVE_RAMP_TIME);
+    rightRearDriveMotor_Leader.Config_kP(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_PROPORTIONAL_CTRL);
+    rightRearDriveMotor_Leader.Config_kD(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_DERIVATIVE_CTRL);
+    rightRearDriveMotor_Leader.Config_kF(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_FEED_FWD_CTRL);
 
     rightRearDriveMotor_Follower.ConfigPeakOutputForward(MECANUM_DRIVE_PEAK_OUTPUT_FWD);
     rightRearDriveMotor_Follower.ConfigPeakOutputReverse(MECANUM_DRIVE_PEAK_OUTPUT_REV);
