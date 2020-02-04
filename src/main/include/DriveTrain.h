@@ -3,11 +3,18 @@
 #ifndef _H_
 #define _H_
 
+#include "frc/Joystick.h"
+#include "ButtonMap.h"
+
 /* TUNING VARIABLES */
 #define SPEED_SCALAR (0.25)
 #define WRITE_TALON_CONFIGURATIONS (false)
+#define USE_FIELD_MODE (false)
 
-/* MOTOR CONTROLLERS CONFIGURATION */
+/* JOYSTICK INPUT MAPPING */
+#define GYRO_ZERO_BUTTON (A_Button)
+
+/* MOTOR CONTROLLERS CAN DEVICE NUMBERS */
 #define CHANNEL_TALON_LF_LEADER (53)
 #define CHANNEL_TALON_LR_LEADER (60)
 #define CHANNEL_TALON_RF_LEADER (51)
@@ -19,8 +26,6 @@
 #define CHANNEL_TALON_RR_FOLLOWER (59)
 
 /* JOYSTICKS CONFIGURATION */
-#define PORT_JOYSTICK_DRIVER_ONE (0)
-#define PORT_JOYSTICK_LIFTER_ONE (1)
 #define JOYSTICK_DEADBAND (0.10)
 
 /* TALON SRX CONFIGURATION */
@@ -35,9 +40,12 @@
 class DriveTrain
 {
 public:
-  void Init();
+  void Init(frc::Joystick *);
   void Drive();
+
+private:
   void WriteTalonConfigs();
+  double DeadBand(double);
 };
 
 #endif
