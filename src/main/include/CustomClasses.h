@@ -5,6 +5,11 @@
 
 #include "frc/Joystick.h"
 
+#define PORT_JOYSTICK_DRIVER_ONE (0)
+#define PORT_JOYSTICK_DRIVER_TWO (1)
+
+static frc::Joystick driver_one{PORT_JOYSTICK_DRIVER_ONE};
+static frc::Joystick driver_two{PORT_JOYSTICK_DRIVER_TWO};
 class Commands
 {
 public:
