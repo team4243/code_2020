@@ -20,6 +20,7 @@
 
 /* JOYSTICKS CONFIGURATION */
 #define PORT_JOYSTICK_DRIVER_ONE (0)
+#define PORT_JOYSTICK_PLAYER_TWO (1)
 #define JOYSTICK_DEADBAND (0.10)
 
 /* TALON SRX CONFIGURATION */
@@ -37,6 +38,8 @@ public:
   void Init();
   void Drive();
   void WriteTalonConfigs();
+
+
 };
 
 #endif
