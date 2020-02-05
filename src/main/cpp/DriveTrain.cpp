@@ -1,63 +1,84 @@
-#include "DriveTrain.h"
+#include "CustomClasses.h"
 
-#include "frc/Joystick.h"
 #include "frc/drive/MecanumDrive.h"
 #include "ctre/Phoenix.h"
 
-#include "frc/DriverStation.h"
 #include "frc/smartdashboard/SmartDashboard.h"
 #include "AHRS.h"
 
 #include "ButtonMap.h"
 
-/* MOTOR CONTROLLER OBJECT INSTANTIATION */
-WPI_TalonSRX leftFrontDriveMotor_Leader{CHANNEL_TALON_LF_LEADER};
-WPI_TalonSRX leftRearDriveMotor_Leader{CHANNEL_TALON_LR_LEADER};
-WPI_TalonSRX rightFrontDriveMotor_Leader{CHANNEL_TALON_RF_LEADER};
-WPI_TalonSRX rightRearDriveMotor_Leader{CHANNEL_TALON_RR_LEADER};
+/* TUNING VARIABLES */
+#define SPEED_SCALAR (0.25)
+#define WRITE_TALON_CONFIGURATIONS (false)
+#define USE_FIELD_MODE (false)
 
-WPI_TalonSRX leftFrontDriveMotor_Follower{CHANNEL_TALON_LF_FOLLOWER};
-WPI_TalonSRX leftRearDriveMotor_Follower{CHANNEL_TALON_LR_FOLLOWER};
-WPI_TalonSRX rightFrontDriveMotor_Follower{CHANNEL_TALON_RF_FOLLOWER};
-WPI_TalonSRX rightRearDriveMotor_Follower{CHANNEL_TALON_RR_FOLLOWER};
+/* JOYSTICK INPUT MAPPING */
+#define GYRO_ZERO_BUTTON (A_BUTTON)
+
+/* MOTOR CONTROLLERS CAN DEVICE NUMBERS */
+#define CHANNEL_TALON_LF_LEADER (53)
+#define CHANNEL_TALON_LR_LEADER (60)
+#define CHANNEL_TALON_RF_LEADER (51)
+#define CHANNEL_TALON_RR_LEADER (50)
+
+#define CHANNEL_TALON_LF_FOLLOWER (62)
+#define CHANNEL_TALON_LR_FOLLOWER (1)
+#define CHANNEL_TALON_RF_FOLLOWER (2)
+#define CHANNEL_TALON_RR_FOLLOWER (59)
+
+/* JOYSTICKS CONFIGURATION */
+#define JOYSTICK_DEADBAND (0.10)
+
+/* TALON SRX CONFIGURATION */
+#define MECANUM_DRIVE_PEAK_OUTPUT_FWD (0.35) // Maximum output speed 0->1
+#define MECANUM_DRIVE_PEAK_OUTPUT_REV (-0.35)
+#define MECANUM_DRIVE_PROPORTIONAL_CTRL (0.01)
+#define MECANUM_DRIVE_DERIVATIVE_CTRL (0.001)
+#define MECANUM_DRIVE_FEED_FWD_CTRL (0)
+#define MECANUM_DRIVE_RAMP_TIME (0) // Seconds to get from neutral to full speed (peak output)
+#define MECANUM_DRIVE_SLOT_IDX (0)  // Which motor control profile to save the configuration to, 0 and 1 available
+
+/* MOTOR CONTROLLER OBJECT INSTANTIATION */
+WPI_TalonSRX leftFront_Leader{CHANNEL_TALON_LF_LEADER};
+WPI_TalonSRX leftRear_Leader{CHANNEL_TALON_LR_LEADER};
+WPI_TalonSRX rightFront_Leader{CHANNEL_TALON_RF_LEADER};
+WPI_TalonSRX rightRear_Leader{CHANNEL_TALON_RR_LEADER};
+
+WPI_TalonSRX leftFront_Follower{CHANNEL_TALON_LF_FOLLOWER};
+WPI_TalonSRX leftRear_Follower{CHANNEL_TALON_LR_FOLLOWER};
+WPI_TalonSRX rightFront_Follower{CHANNEL_TALON_RF_FOLLOWER};
+WPI_TalonSRX rightRear_Follower{CHANNEL_TALON_RR_FOLLOWER};
 
 /* MECANUM DRIVE OBJECT INSTANTIATION */
-frc::MecanumDrive mecanumDrive{leftFrontDriveMotor_Leader,
-                               leftRearDriveMotor_Leader,
-                               rightFrontDriveMotor_Leader,
-                               rightRearDriveMotor_Leader};
-
-/* JOYSTICK POINTERS */
-frc::Joystick *driver_one;
+frc::MecanumDrive mecanumDrive{leftFront_Leader,
+                               leftRear_Leader,
+                               rightFront_Leader,
+                               rightRear_Leader};
 
 /* NAVX OBJECT INSTANTIATION */
 AHRS navX_gyro{SPI::Port::kMXP};
 
-/* INITIALIZE */
-void DriveTrain::Init(frc::Joystick *_driver_one)
+void DriveTrain::Init()
 {
-    // Set the joystick instance for the driver
-    driver_one = _driver_one;
-
     navX_gyro.ZeroYaw();
 
     if (WRITE_TALON_CONFIGURATIONS)
         WriteTalonConfigs();
 
     // Set followers to follow their perspective leaders
-    leftFrontDriveMotor_Follower.Follow(leftFrontDriveMotor_Leader);
-    leftRearDriveMotor_Follower.Follow(leftRearDriveMotor_Leader);
-    rightFrontDriveMotor_Follower.Follow(rightFrontDriveMotor_Leader);
-    rightRearDriveMotor_Follower.Follow(rightRearDriveMotor_Leader);
+    leftFront_Follower.Follow(leftFront_Leader);
+    leftRear_Follower.Follow(leftRear_Leader);
+    rightFront_Follower.Follow(rightFront_Leader);
+    rightRear_Follower.Follow(rightRear_Leader);
 }
 
-/* MECANUM DRIVE */
 void DriveTrain::Drive()
 {
     // Deadband and scale the joystick input axes
-    double joystick_X = DeadBand(driver_one->GetRawAxis(Left_Wheel_X)) * SPEED_SCALAR;
-    double joystick_Y = DeadBand(-driver_one->GetRawAxis(Left_Wheel_Y)) * SPEED_SCALAR;
-    double joystick_Z = DeadBand(driver_one->GetRawAxis(Right_Wheel_X)) * SPEED_SCALAR;
+    double joystick_X = DeadBand(Commands::GetDrive_ForwardReverse()) * SPEED_SCALAR;
+    double joystick_Y = DeadBand(-Commands::GetDrive_Strafe()) * SPEED_SCALAR;
+    double joystick_Z = DeadBand(Commands::GetDrive_Rotate()) * SPEED_SCALAR;
 
     // Field mode uses the GYRO YAW as an input
     if (USE_FIELD_MODE)
@@ -67,43 +88,41 @@ void DriveTrain::Drive()
 
     SmartDashboard::PutNumber("The Robot Yawn", navX_gyro.GetYaw());
 
-    if (driver_one->GetRawButton(A_Button))
+    if (Commands::GetDrive_ZeroNavX())
         navX_gyro.ZeroYaw();
 }
 
-/* WRITE TALON CONFIGURATION FOR LEADERS */
 void DriveTrain::WriteTalonConfigs()
 {
-    leftFrontDriveMotor_Leader.ConfigPeakOutputForward(MECANUM_DRIVE_PEAK_OUTPUT_FWD);
-    leftFrontDriveMotor_Leader.ConfigPeakOutputReverse(MECANUM_DRIVE_PEAK_OUTPUT_REV);
-    leftFrontDriveMotor_Leader.ConfigClosedloopRamp(MECANUM_DRIVE_RAMP_TIME);
-    leftFrontDriveMotor_Leader.Config_kP(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_PROPORTIONAL_CTRL);
-    leftFrontDriveMotor_Leader.Config_kD(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_DERIVATIVE_CTRL);
-    leftFrontDriveMotor_Leader.Config_kF(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_FEED_FWD_CTRL);
+    leftFront_Leader.ConfigPeakOutputForward(MECANUM_DRIVE_PEAK_OUTPUT_FWD);
+    leftFront_Leader.ConfigPeakOutputReverse(MECANUM_DRIVE_PEAK_OUTPUT_REV);
+    leftFront_Leader.ConfigClosedloopRamp(MECANUM_DRIVE_RAMP_TIME);
+    leftFront_Leader.Config_kP(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_PROPORTIONAL_CTRL);
+    leftFront_Leader.Config_kD(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_DERIVATIVE_CTRL);
+    leftFront_Leader.Config_kF(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_FEED_FWD_CTRL);
 
-    leftRearDriveMotor_Leader.ConfigPeakOutputForward(MECANUM_DRIVE_PEAK_OUTPUT_FWD);
-    leftRearDriveMotor_Leader.ConfigPeakOutputReverse(MECANUM_DRIVE_PEAK_OUTPUT_REV);
-    leftRearDriveMotor_Leader.ConfigClosedloopRamp(MECANUM_DRIVE_RAMP_TIME);
-    leftRearDriveMotor_Leader.Config_kP(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_PROPORTIONAL_CTRL);
-    leftRearDriveMotor_Leader.Config_kD(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_DERIVATIVE_CTRL);
-    leftRearDriveMotor_Leader.Config_kF(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_FEED_FWD_CTRL);
+    leftRear_Leader.ConfigPeakOutputForward(MECANUM_DRIVE_PEAK_OUTPUT_FWD);
+    leftRear_Leader.ConfigPeakOutputReverse(MECANUM_DRIVE_PEAK_OUTPUT_REV);
+    leftRear_Leader.ConfigClosedloopRamp(MECANUM_DRIVE_RAMP_TIME);
+    leftRear_Leader.Config_kP(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_PROPORTIONAL_CTRL);
+    leftRear_Leader.Config_kD(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_DERIVATIVE_CTRL);
+    leftRear_Leader.Config_kF(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_FEED_FWD_CTRL);
 
-    rightFrontDriveMotor_Leader.ConfigPeakOutputForward(MECANUM_DRIVE_PEAK_OUTPUT_FWD);
-    rightFrontDriveMotor_Leader.ConfigPeakOutputReverse(MECANUM_DRIVE_PEAK_OUTPUT_REV);
-    rightFrontDriveMotor_Leader.ConfigClosedloopRamp(MECANUM_DRIVE_RAMP_TIME);
-    rightFrontDriveMotor_Leader.Config_kP(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_PROPORTIONAL_CTRL);
-    rightFrontDriveMotor_Leader.Config_kD(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_DERIVATIVE_CTRL);
-    rightFrontDriveMotor_Leader.Config_kF(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_FEED_FWD_CTRL);
+    rightFront_Leader.ConfigPeakOutputForward(MECANUM_DRIVE_PEAK_OUTPUT_FWD);
+    rightFront_Leader.ConfigPeakOutputReverse(MECANUM_DRIVE_PEAK_OUTPUT_REV);
+    rightFront_Leader.ConfigClosedloopRamp(MECANUM_DRIVE_RAMP_TIME);
+    rightFront_Leader.Config_kP(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_PROPORTIONAL_CTRL);
+    rightFront_Leader.Config_kD(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_DERIVATIVE_CTRL);
+    rightFront_Leader.Config_kF(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_FEED_FWD_CTRL);
 
-    rightRearDriveMotor_Leader.ConfigPeakOutputForward(MECANUM_DRIVE_PEAK_OUTPUT_FWD);
-    rightRearDriveMotor_Leader.ConfigPeakOutputReverse(MECANUM_DRIVE_PEAK_OUTPUT_REV);
-    rightRearDriveMotor_Leader.ConfigClosedloopRamp(MECANUM_DRIVE_RAMP_TIME);
-    rightRearDriveMotor_Leader.Config_kP(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_PROPORTIONAL_CTRL);
-    rightRearDriveMotor_Leader.Config_kD(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_DERIVATIVE_CTRL);
-    rightRearDriveMotor_Leader.Config_kF(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_FEED_FWD_CTRL);
+    rightRear_Leader.ConfigPeakOutputForward(MECANUM_DRIVE_PEAK_OUTPUT_FWD);
+    rightRear_Leader.ConfigPeakOutputReverse(MECANUM_DRIVE_PEAK_OUTPUT_REV);
+    rightRear_Leader.ConfigClosedloopRamp(MECANUM_DRIVE_RAMP_TIME);
+    rightRear_Leader.Config_kP(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_PROPORTIONAL_CTRL);
+    rightRear_Leader.Config_kD(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_DERIVATIVE_CTRL);
+    rightRear_Leader.Config_kF(MECANUM_DRIVE_SLOT_IDX, MECANUM_DRIVE_FEED_FWD_CTRL);
 }
 
-/* DEADBAND FUNCTION */
 double DriveTrain::DeadBand(double axisValue)
 {
     /* Takes joystick axis (-1 to 1) and returns 0 if within the deadband */

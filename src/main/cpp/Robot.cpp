@@ -1,21 +1,23 @@
 #include "Robot.h"
-#include "DriveTrain.h"
+
+#include "CustomClasses.h"
 
 #include "frc/Joystick.h"
 
 #define ENABLE_DRIVE_TRAIN (true)
+#define ENABLE_HANG_MECH (false)
+
+DriveTrain driveTrain;
+HangMech hangMech;
 
 /******************** ROBOT INIT ********************/
 void Robot::RobotInit()
 {
-    driver_one = new frc::Joystick(PORT_JOYSTICK_DRIVER_ONE);
-    driver_two = new frc::Joystick(PORT_JOYSTICK_DRIVER_TWO);
-
     if (ENABLE_DRIVE_TRAIN)
-        driveTrain.Init(driver_one);
+        driveTrain.Init();
 
-    // control panel init
-    // hang mech init
+    if (ENABLE_HANG_MECH)
+        hangMech.Init();
 }
 
 /******************** ROBOT PERIODIC ********************/
