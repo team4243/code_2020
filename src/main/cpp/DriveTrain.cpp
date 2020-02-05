@@ -29,7 +29,8 @@ frc::MecanumDrive mecanumDrive{leftFrontDriveMotor_Leader,
                                rightRearDriveMotor_Leader};
 
 /* JOYSTICK OBJECTS INSTANTIATION */
-frc::Joystick joystick{PORT_JOYSTICK_DRIVER_ONE};
+frc::Joystick joystick_driver{PORT_JOYSTICK_DRIVER_ONE};
+// frc::Joystick joystick_lifter{PORT_JOYSTICK_LIFTER_ONE};
 
 /* NAVX OBJECT INSTANTIATION */
 AHRS *navX_gyro;
@@ -63,16 +64,17 @@ void DriveTrain::Init()
 
 void DriveTrain::Drive()
 {
-    double joystick_X = DeadBand(joystick.GetRawAxis(Left_Wheel_X)) * SPEED_SCALAR;
-    double joystick_Y = DeadBand(-joystick.GetRawAxis(Left_Wheel_Y)) * SPEED_SCALAR;
-    double joystick_Z = DeadBand(joystick.GetRawAxis(Right_Wheel_X)) * SPEED_SCALAR;
+    double joystick_X = DeadBand(joystick_driver.GetRawAxis(Left_Wheel_X)) * SPEED_SCALAR;
+    double joystick_Y = DeadBand(-joystick_driver.GetRawAxis(Left_Wheel_Y)) * SPEED_SCALAR;
+    double joystick_Z = DeadBand(joystick_driver.GetRawAxis(Right_Wheel_X)) * SPEED_SCALAR;
 
     //mecanumDrive.DriveCartesian(joystick_X, joystick_Y, joystick_Z);
     mecanumDrive.DriveCartesian(joystick_X, joystick_Y, joystick_Z, (double)navX_gyro->GetYaw());
+    // mecanumDrive.DriveCartesian(joystick_X, joystick_Y, joystick_Z);
 
     SmartDashboard::PutNumber("The Robot Yawn", navX_gyro->GetYaw());
 
-    if (joystick.GetRawButton(A_Button))
+    if (joystick_driver.GetRawButton(A_Button))
         navX_gyro->ZeroYaw();
 }
 
