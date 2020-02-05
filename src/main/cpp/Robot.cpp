@@ -1,19 +1,14 @@
 #include "Robot.h"
-<<<<<<< HEAD
 
 #include "CustomClasses.h"
 
 #include "frc/Joystick.h"
-=======
 #include "string.h"
 #include "DriveTrain.h"
-#include "frc/Joystick.h"
 #include "ctre/Phoenix.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <ColorSensorInterface.h>
 
-#include "ButtonMap.h"
->>>>>>> DriveTrain_Dev
 
 #define ENABLE_DRIVE_TRAIN (true)
 #define ENABLE_HANG_MECH (false)
