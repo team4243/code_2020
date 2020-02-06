@@ -10,17 +10,17 @@ Excelsior Team 4243 FRC Code 2020
 2. Check your changes: 'git status'
 	- This shows you all file changes, RED means NOT STAGED, GREEN means STAGED
 	
-*3. Stage your changes: 'git add .' (use period for ALL changes, or just type the changed file name)
+**3. Stage your changes: 'git add .' (use period for ALL changes, or just type the changed file name)**
 
 4. Check your staged code: 'git status'
 	- This shows you all STAGED in GREEN.... if any in RED it is NOT STAGED and you need to 'git add....' 
 	
-*5. Commit the staged code!!!!!: 'git commit -m "message goes here"'
+**5. Commit the staged code!!!!!: 'git commit -m "message goes here"'**
 	- This commits the staged code LOCALLY (not in the cloud yet)
 	
 6. Optionally check for any additional changes.. 'git status' show show branch is AHEAD of origin/branch 
 
-*7. Push the commits to the cloud!!: 'git push origin branch_name'
+**7. Push the commits to the cloud!!: 'git push origin branch_name'**
 
 8. Check the status again: 'git status'
 

@@ -4,9 +4,12 @@
 #define _H_
 
 #include "frc/Joystick.h"
+#include "ButtonMap.h"
 
 #define PORT_JOYSTICK_DRIVER_ONE (0)
 #define PORT_JOYSTICK_DRIVER_TWO (1)
+
+#define GYRO_ZERO_BUTTON (A_BUTTON)
 
 static frc::Joystick driver_one{PORT_JOYSTICK_DRIVER_ONE};
 static frc::Joystick driver_two{PORT_JOYSTICK_DRIVER_TWO};
@@ -39,6 +42,17 @@ public:
 
   void ProcessSensorData();
   void ResetSensor();
+
+private:
+  void WriteTalonConfigs();
+  bool button_pressed = false;
+  double position;
+
+  double speedCurrent = 0;
+  double errorLast = 0;
+
+  double proportional = 0;
+  double derivative = 0;
 };
 
 class TeensyGyro
