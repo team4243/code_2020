@@ -76,9 +76,9 @@ void DriveTrain::Init()
 void DriveTrain::Drive()
 {
     // Deadband and scale the joystick input axes
-    double joystick_X = DeadBand(Commands::GetDrive_ForwardReverse()) * SPEED_SCALAR;
-    double joystick_Y = DeadBand(-Commands::GetDrive_Strafe()) * SPEED_SCALAR;
-    double joystick_Z = DeadBand(Commands::GetDrive_Rotate()) * SPEED_SCALAR;
+    double joystick_X = DeadBand(driver_one.GetRawAxis(RIGHT_WHEEL_X)) * SPEED_SCALAR;
+    double joystick_Y = DeadBand(-driver_one.GetRawAxis(RIGHT_WHEEL_Y)) * SPEED_SCALAR;
+    double joystick_Z = DeadBand(driver_one.GetRawAxis(LEFT_WHEEL_X)) * SPEED_SCALAR;
 
     // Field mode uses the GYRO YAW as an input
     if (USE_FIELD_MODE)
