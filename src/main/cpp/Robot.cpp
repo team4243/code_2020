@@ -21,7 +21,10 @@ void Robot::RobotInit()
 }
 
 /******************** ROBOT PERIODIC ********************/
-void Robot::RobotPeriodic() {}
+void Robot::RobotPeriodic() {
+    if (ENABLE_HANG_MECH)
+        hangMech.ProcessSensorData();
+}
 
 /******************** AUTONOMOUS INIT ********************/
 void Robot::AutonomousInit() {}
@@ -37,6 +40,9 @@ void Robot::TeleopPeriodic()
 {
     if (ENABLE_DRIVE_TRAIN)
         driveTrain.Drive();
+    if (ENABLE_HANG_MECH)
+        hangMech.Hang_PercentOutput();
+        // hangMech.Hang_Position();
 }
 
 void Robot::TestPeriodic() {}
