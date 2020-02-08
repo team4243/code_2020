@@ -5,9 +5,14 @@
 
 #include "frc/Joystick.h"
 #include "ButtonMap.h"
+#include <vector>
+#include "ctre/Phoenix.h"
+#include "frc/Talon.h"
 
 #define PORT_JOYSTICK_DRIVER_ONE (0)
 #define PORT_JOYSTICK_DRIVER_TWO (1)
+
+#define INITIAL_VECTOR_SIZE (300)
 
 #define GYRO_ZERO_BUTTON (A_BUTTON)
 
@@ -44,6 +49,12 @@ public:
   void ResetSensor();
 
 private:
+
+  std::vector<double> leftStatorCurrent = std::vector<double>(INITIAL_VECTOR_SIZE);
+  std::vector<double> rightStatorCurrent = std::vector<double>(INITIAL_VECTOR_SIZE);
+  std::vector<double> smoothedLeftStatorCurrent = std::vector<double>(INITIAL_VECTOR_SIZE);
+  std::vector<double> smoothedRightStatorCurrent = std::vector<double>(INITIAL_VECTOR_SIZE);
+
   void WriteTalonConfigs();
   bool button_pressed = false;
   double position;
@@ -53,6 +64,9 @@ private:
 
   double proportional = 0;
   double derivative = 0;
+
+  void logStatorCurrents(WPI_TalonSRX& motor, std::vector<double>& rawStator, std::vector<double>& smoothedStator);
+  bool spikeDetected();
 };
 
 class TeensyGyro

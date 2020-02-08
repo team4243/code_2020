@@ -1,7 +1,7 @@
 #include "CustomClasses.h"
 
-#include "ctre/Phoenix.h"
-#include "frc/Talon.h"
+// #include "ctre/Phoenix.h"
+// #include "frc/Talon.h"
 
 #include "frc/smartdashboard/SmartDashboard.h"
 
@@ -13,8 +13,11 @@
 #define USE_JOYSTICK (false)
 
 /* MOTOR DEFINITIONS*/
-#define PAYLOAD_LIFT_LEADER_DEVICENUMBER (53)
-#define PAYLOAD_LIFT_FOLLOWER_DEVICENUMBER (54)
+#define RIGHT_PAYLOAD_LIFT_LEADER_DEVICENUMBER (53)
+#define RIGHT_PAYLOAD_LIFT_FOLLOWER_DEVICENUMBER (54)
+
+#define LEFT_PAYLOAD_LIFT_LEADER_DEVICENUMBER (0)
+#define LEFT_PAYLOAD_LIFT_FOLLOWER_DEVICENUMBER (0)
 
 #define MANUAL_INCREMENT (100)
 #define WRITE_TALON_CONFIGURATIONS (true)
@@ -28,8 +31,11 @@
 #define TALON_RAMP_TIME (0)
 #define TALON_SLOT_IDX (0)
 
-WPI_TalonSRX Payload_Lift_Leader{PAYLOAD_LIFT_LEADER_DEVICENUMBER};
-WPI_TalonSRX Payload_Lift_Follower{PAYLOAD_LIFT_LEADER_DEVICENUMBER};
+WPI_TalonSRX Right_Payload_Lift_Leader{RIGHT_PAYLOAD_LIFT_LEADER_DEVICENUMBER};
+WPI_TalonSRX Right_Payload_Lift_Follower{RIGHT_PAYLOAD_LIFT_FOLLOWER_DEVICENUMBER};
+
+WPI_TalonSRX Left_Payload_Lift_Leader{LEFT_PAYLOAD_LIFT_LEADER_DEVICENUMBER};
+WPI_TalonSRX Left_Payload_Lift_Follower{LEFT_PAYLOAD_LIFT_FOLLOWER_DEVICENUMBER};
 
 TeensyGyro teensyGyro;
 
@@ -40,7 +46,7 @@ void HangMech::Init()
     if (WRITE_TALON_CONFIGURATIONS)
         WriteTalonConfigs();
 
-    Payload_Lift_Follower.Follow(Payload_Lift_Leader);
+    Right_Payload_Lift_Follower.Follow(Right_Payload_Lift_Leader);
 }
 
 void HangMech::Hang_PercentOutput()
@@ -57,7 +63,7 @@ void HangMech::Hang_PercentOutput()
         if (driver_one.GetRawButton(A_BUTTON))
             derivative -= 0.0001;
     }
-    else 
+    else
     {
         proportional = PROPORTIONAL_CONTROL;
         derivative = DERIVATIVE_CONTROL;
@@ -78,7 +84,7 @@ void HangMech::Hang_PercentOutput()
 
     speedNew *= SPEED_SCALAR;
 
-    Payload_Lift_Leader.Set(ControlMode::PercentOutput, speedNew);
+    Right_Payload_Lift_Leader.Set(ControlMode::PercentOutput, speedNew);
 
     errorLast = errorCurrent;
     speedCurrent = speedNew;
@@ -93,9 +99,9 @@ void HangMech::Hang_Position()
 {
     position = 0;
 
-    Payload_Lift_Leader.Set(ControlMode::Position, position);
+    Right_Payload_Lift_Leader.Set(ControlMode::Position, position);
 
-    double encoder = Payload_Lift_Leader.GetSensorCollection().GetQuadraturePosition();
+    double encoder = Right_Payload_Lift_Leader.GetSensorCollection().GetQuadraturePosition();
 
     frc::SmartDashboard::PutNumber("Encoder:", encoder);
     frc::SmartDashboard::PutNumber("Position:", position);
@@ -111,12 +117,26 @@ void HangMech::ProcessSensorData()
     teensyGyro.ProcessSerialData();
 }
 
+void HangMech::logStatorCurrents(WPI_TalonSRX& motor, std::vector<double>& rawStator, std::vector<double>& smoothedStator)
+{
+
+}
+
+bool HangMech::spikeDetected() { return true; }
+
 void HangMech::WriteTalonConfigs()
 {
-    Payload_Lift_Leader.ConfigPeakOutputForward(TALON_PEAK_OUTPUT_FWD);
-    Payload_Lift_Leader.ConfigPeakOutputReverse(TALON_PEAK_OUTPUT_REV);
-    Payload_Lift_Leader.ConfigClosedloopRamp(TALON_RAMP_TIME);
-    Payload_Lift_Leader.Config_kP(TALON_SLOT_IDX, TALON_PROPORTIONAL_CTRL);
-    Payload_Lift_Leader.Config_kD(TALON_SLOT_IDX, TALON_DERIVATIVE_CTRL);
-    Payload_Lift_Leader.Config_kF(TALON_SLOT_IDX, TALON_FEED_FWD_CTRL);
+    Right_Payload_Lift_Leader.ConfigPeakOutputForward(TALON_PEAK_OUTPUT_FWD);
+    Right_Payload_Lift_Leader.ConfigPeakOutputReverse(TALON_PEAK_OUTPUT_REV);
+    Right_Payload_Lift_Leader.ConfigClosedloopRamp(TALON_RAMP_TIME);
+    Right_Payload_Lift_Leader.Config_kP(TALON_SLOT_IDX, TALON_PROPORTIONAL_CTRL);
+    Right_Payload_Lift_Leader.Config_kD(TALON_SLOT_IDX, TALON_DERIVATIVE_CTRL);
+    Right_Payload_Lift_Leader.Config_kF(TALON_SLOT_IDX, TALON_FEED_FWD_CTRL);
+
+    Left_Payload_Lift_Leader.ConfigPeakOutputForward(TALON_PEAK_OUTPUT_FWD);
+    Left_Payload_Lift_Leader.ConfigPeakOutputReverse(TALON_PEAK_OUTPUT_REV);
+    Left_Payload_Lift_Leader.ConfigClosedloopRamp(TALON_RAMP_TIME);
+    Left_Payload_Lift_Leader.Config_kP(TALON_SLOT_IDX, TALON_PROPORTIONAL_CTRL);
+    Left_Payload_Lift_Leader.Config_kD(TALON_SLOT_IDX, TALON_DERIVATIVE_CTRL);
+    Left_Payload_Lift_Leader.Config_kF(TALON_SLOT_IDX, TALON_FEED_FWD_CTRL);
 }
