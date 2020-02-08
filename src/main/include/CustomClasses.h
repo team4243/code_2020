@@ -30,6 +30,8 @@ public:
 class DriveTrain
 {
 public:
+  double max_stator_current = -9999999.0;
+  double min_stator_current = 9999999.0;
   void Init();
   void Drive();
 
@@ -49,7 +51,6 @@ public:
   void ResetSensor();
 
 private:
-
   std::vector<double> leftStatorCurrent = std::vector<double>(INITIAL_VECTOR_SIZE);
   std::vector<double> rightStatorCurrent = std::vector<double>(INITIAL_VECTOR_SIZE);
   std::vector<double> smoothedLeftStatorCurrent = std::vector<double>(INITIAL_VECTOR_SIZE);
@@ -65,7 +66,7 @@ private:
   double proportional = 0;
   double derivative = 0;
 
-  void logStatorCurrents(WPI_TalonSRX& motor, std::vector<double>& rawStator, std::vector<double>& smoothedStator);
+  void logStatorCurrents(WPI_TalonSRX &motor, std::vector<double> &rawStator, std::vector<double> &smoothedStator);
   bool spikeDetected();
 };
 
@@ -75,6 +76,12 @@ public:
   void Reset();
   void ProcessSerialData();
   int GetAngleMeasurement();
+};
+
+class Utility
+{ //Sending report of the current to file
+  public:
+  static int WriteToFile(std::iostream fh, std::string value) {fh << value << std::endl};
 };
 
 #endif

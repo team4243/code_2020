@@ -4,6 +4,8 @@
 
 #include "frc/Joystick.h"
 
+#include "frc/smartdashboard/SmartDashboard.h"
+
 #define ENABLE_DRIVE_TRAIN (true)
 #define ENABLE_HANG_MECH (false)
 

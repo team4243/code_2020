@@ -85,6 +85,13 @@ void DriveTrain::Drive()
 
     if (driver_one.GetRawButton(A_BUTTON))
         navX_gyro.ZeroYaw();
+
+    double statCurrent = leftFront_Leader.GetStatorCurrent();
+    if(statCurrent < this->min_stator_current) this->min_stator_current = statCurrent;
+    if(statCurrent > this->max_stator_current) this->max_stator_current = statCurrent;
+    SmartDashboard::PutNumber("LF Current", statCurrent);
+    SmartDashboard::PutNumber("Max Current", this->max_stator_current);
+    SmartDashboard::PutNumber("Min Current", this->min_stator_current);
 }
 
 void DriveTrain::WriteTalonConfigs()
