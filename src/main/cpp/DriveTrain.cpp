@@ -9,7 +9,9 @@
 /* TUNING VARIABLES */
 #define SPEED_SCALAR (0.25)
 #define WRITE_TALON_CONFIGURATIONS (false)
-#define USE_FIELD_MODE (false)
+
+// #define USE_FIELD_MODE (false)
+#define USE_FIELD_MODE (true)
 
 /* MOTOR CONTROLLERS CAN DEVICE NUMBERS */
 #define CHANNEL_TALON_LF_LEADER (53)
@@ -75,23 +77,25 @@ void DriveTrain::Drive()
     double joystick_Y = DeadBand(-driver_one.GetRawAxis(LEFT_WHEEL_Y)) * SPEED_SCALAR;
     double joystick_Z = DeadBand(driver_one.GetRawAxis(RIGHT_WHEEL_X)) * SPEED_SCALAR;
 
+    double gyroYaw = (double)navX_gyro.GetYaw();
+    
+    SmartDashboard::PutNumber("The Robot Yawn", gyroYaw);
+
     // Field mode uses the GYRO YAW as an input
     if (USE_FIELD_MODE)
-        mecanumDrive.DriveCartesian(joystick_X, joystick_Y, joystick_Z, (double)navX_gyro.GetYaw());
+        mecanumDrive.DriveCartesian(joystick_X, joystick_Y, joystick_Z, gyroYaw);
     else
         mecanumDrive.DriveCartesian(joystick_X, joystick_Y, joystick_Z);
-
-    SmartDashboard::PutNumber("The Robot Yawn", navX_gyro.GetYaw());
 
     if (driver_one.GetRawButton(A_BUTTON))
         navX_gyro.ZeroYaw();
 
-    double statCurrent = leftFront_Leader.GetStatorCurrent();
-    if(statCurrent < this->min_stator_current) this->min_stator_current = statCurrent;
-    if(statCurrent > this->max_stator_current) this->max_stator_current = statCurrent;
-    SmartDashboard::PutNumber("LF Current", statCurrent);
-    SmartDashboard::PutNumber("Max Current", this->max_stator_current);
-    SmartDashboard::PutNumber("Min Current", this->min_stator_current);
+    // double statCurrent = leftFront_Leader.GetStatorCurrent();
+    // if(statCurrent < this->min_stator_current) this->min_stator_current = statCurrent;
+    // if(statCurrent > this->max_stator_current) this->max_stator_current = statCurrent;
+    // SmartDashboard::PutNumber("LF Current", statCurrent);
+    // SmartDashboard::PutNumber("Max Current", this->max_stator_current);
+    // SmartDashboard::PutNumber("Min Current", this->min_stator_current);
 }
 
 void DriveTrain::WriteTalonConfigs()

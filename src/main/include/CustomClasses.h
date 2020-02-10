@@ -80,8 +80,11 @@ public:
 
 class Utility
 { //Sending report of the current to file
-  public:
-  static int WriteToFile(std::iostream fh, std::string value) {fh << value << std::endl};
+public:
+  static int WriteToFile(std::iostream fh, std::string value)
+  {
+    fh << value << std::endl;
+  }
 };
 
 #endif
