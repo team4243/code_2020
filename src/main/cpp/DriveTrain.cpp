@@ -10,8 +10,7 @@
 #define SPEED_SCALAR (0.25)
 #define WRITE_TALON_CONFIGURATIONS (false)
 
-// #define USE_FIELD_MODE (false)
-#define USE_FIELD_MODE (true)
+#define USE_FIELD_MODE (false)
 
 /* MOTOR CONTROLLERS CAN DEVICE NUMBERS */
 #define CHANNEL_TALON_LF_LEADER (53)
@@ -88,14 +87,18 @@ void DriveTrain::Drive()
         mecanumDrive.DriveCartesian(joystick_X, joystick_Y, joystick_Z);
 
     if (driver_one.GetRawButton(A_BUTTON))
+    {
         navX_gyro.ZeroYaw();
+        this->min_stator_current = 0;
+        this->max_stator_current = 0;
+    }
 
-    // double statCurrent = leftFront_Leader.GetStatorCurrent();
-    // if(statCurrent < this->min_stator_current) this->min_stator_current = statCurrent;
-    // if(statCurrent > this->max_stator_current) this->max_stator_current = statCurrent;
-    // SmartDashboard::PutNumber("LF Current", statCurrent);
-    // SmartDashboard::PutNumber("Max Current", this->max_stator_current);
-    // SmartDashboard::PutNumber("Min Current", this->min_stator_current);
+    double statCurrent = leftFront_Leader.GetStatorCurrent();
+    if(statCurrent < this->min_stator_current) this->min_stator_current = statCurrent;
+    if(statCurrent > this->max_stator_current) this->max_stator_current = statCurrent;
+    SmartDashboard::PutNumber("LF Current", statCurrent);
+    SmartDashboard::PutNumber("Max Current", this->max_stator_current);
+    SmartDashboard::PutNumber("Min Current", this->min_stator_current);
 }
 
 void DriveTrain::WriteTalonConfigs()
