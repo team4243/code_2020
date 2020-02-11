@@ -1,9 +1,10 @@
- #include <frc/DriverStation.h>
- #include <frc/smartdashboard/smartdashboard.h>
- #include "ColorSensorInterface.h"
- 
- ColorSensorInterface::ColorSensorInterface()
- {
+#include "CustomClasses.h"
+
+#include <frc/DriverStation.h>
+#include <frc/smartdashboard/smartdashboard.h>
+
+ColorSensorInterface::ColorSensorInterface()
+{
     static constexpr auto i2cPort = frc::I2C::Port::kOnboard;
     colorSensor.reset(new rev::ColorSensorV3(i2cPort));
 
@@ -11,12 +12,11 @@
     m_colorMatcher.AddColorMatch(kGreenTarget);
     m_colorMatcher.AddColorMatch(kRedTarget);
     m_colorMatcher.AddColorMatch(kYellowTarget);
- }
+}
 
- ColorSensorInterface::~ColorSensorInterface()
- {
-
- }
+ColorSensorInterface::~ColorSensorInterface()
+{
+}
 
 std::string ColorSensorInterface::GetColorFromSensor(double confidence)
 {
@@ -25,17 +25,26 @@ std::string ColorSensorInterface::GetColorFromSensor(double confidence)
     frc::Color detectedColor = colorSensor->GetColor();
     frc::Color matchedColor = m_colorMatcher.MatchClosestColor(detectedColor, confidence);
 
-    if (matchedColor == kBlueTarget) {
-      colorString = "B";
-    } else if (matchedColor == kRedTarget) {
-      colorString = "R";
-    } else if (matchedColor == kGreenTarget) {
-      colorString = "G";
-    } else if (matchedColor == kYellowTarget) {
-      colorString = "Y";
-    } else {
-      colorString = "Unknown";
-    } 
+    if (matchedColor == kBlueTarget)
+    {
+        colorString = "B";
+    }
+    else if (matchedColor == kRedTarget)
+    {
+        colorString = "R";
+    }
+    else if (matchedColor == kGreenTarget)
+    {
+        colorString = "G";
+    }
+    else if (matchedColor == kYellowTarget)
+    {
+        colorString = "Y";
+    }
+    else
+    {
+        colorString = "Unknown";
+    }
 
     frc::SmartDashboard::PutString("Detected Color: ", colorString);
 
@@ -46,7 +55,8 @@ std::string ColorSensorInterface::getColorFromFMS()
 {
     std::string gameData;
     gameData = frc::DriverStation::GetInstance().GetGameSpecificMessage();
-    if(gameData.length() > 0)
+
+    if (gameData.length() > 0)
     {
         colorFromFMS = gameData.substr(0, 1); // B, G, R, Y
         /*
@@ -69,9 +79,11 @@ std::string ColorSensorInterface::getColorFromFMS()
             break;
         }
         */
-    } else {
+    }
+    else
+    {
         printf("\nNo color received from FMS");
-    //Code for no data received yet
+        //Code for no data received yet
     }
 
     frc::SmartDashboard::PutString("Reqested Color From FMS: ", colorFromFMS);
@@ -86,5 +98,5 @@ bool ColorSensorInterface::ColorMatchesColorFromFMS()
     if (reqestedColor.compare(color) == 0)
         return true;
     else
-        return false;    
+        return false;
 }

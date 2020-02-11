@@ -6,15 +6,11 @@
 #include "frc/smartdashboard/SmartDashboard.h"
 #include "AHRS.h"
 
-#include "ButtonMap.h"
-
 /* TUNING VARIABLES */
 #define SPEED_SCALAR (0.25)
 #define WRITE_TALON_CONFIGURATIONS (false)
-#define USE_FIELD_MODE (false)
 
-/* JOYSTICK INPUT MAPPING */
-#define GYRO_ZERO_BUTTON (A_BUTTON)
+#define USE_FIELD_MODE (false)
 
 /* MOTOR CONTROLLERS CAN DEVICE NUMBERS */
 #define CHANNEL_TALON_LF_LEADER (53)
@@ -77,20 +73,33 @@ void DriveTrain::Init()
 void DriveTrain::Drive()
 {
     // Deadband and scale the joystick input axes
-    double joystick_X = DeadBand(Commands::GetDrive_ForwardReverse()) * SPEED_SCALAR;
-    double joystick_Y = DeadBand(-Commands::GetDrive_Strafe()) * SPEED_SCALAR;
-    double joystick_Z = DeadBand(Commands::GetDrive_Rotate()) * SPEED_SCALAR;
+    double joystick_X = DeadBand(driver_one.GetRawAxis(LEFT_WHEEL_X)) * SPEED_SCALAR;
+    double joystick_Y = DeadBand(-driver_one.GetRawAxis(LEFT_WHEEL_Y)) * SPEED_SCALAR;
+    double joystick_Z = DeadBand(driver_one.GetRawAxis(RIGHT_WHEEL_X)) * SPEED_SCALAR;
+
+    double gyroYaw = (double)navX_gyro.GetYaw();
+    
+    SmartDashboard::PutNumber("The Robot Yawn", gyroYaw);
 
     // Field mode uses the GYRO YAW as an input
     if (USE_FIELD_MODE)
-        mecanumDrive.DriveCartesian(joystick_X, joystick_Y, joystick_Z, (double)navX_gyro.GetYaw());
+        mecanumDrive.DriveCartesian(joystick_X, joystick_Y, joystick_Z, gyroYaw);
     else
         mecanumDrive.DriveCartesian(joystick_X, joystick_Y, joystick_Z);
 
-    SmartDashboard::PutNumber("The Robot Yawn", navX_gyro.GetYaw());
-
-    if (Commands::GetDrive_ZeroNavX())
+    if (driver_one.GetRawButton(A_BUTTON))
+    {
         navX_gyro.ZeroYaw();
+        this->min_stator_current = 0;
+        this->max_stator_current = 0;
+    }
+
+    double statCurrent = leftFront_Leader.GetStatorCurrent();
+    if(statCurrent < this->min_stator_current) this->min_stator_current = statCurrent;
+    if(statCurrent > this->max_stator_current) this->max_stator_current = statCurrent;
+    SmartDashboard::PutNumber("LF Current", statCurrent);
+    SmartDashboard::PutNumber("Max Current", this->max_stator_current);
+    SmartDashboard::PutNumber("Min Current", this->min_stator_current);
 }
 
 void DriveTrain::WriteTalonConfigs()
