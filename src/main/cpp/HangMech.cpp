@@ -1,9 +1,10 @@
 #include "CustomClasses.h"
 
-// #include "ctre/Phoenix.h"
-// #include "frc/Talon.h"
-
 #include "frc/smartdashboard/SmartDashboard.h"
+#include "ctre/Phoenix.h"
+
+/* TUNING VARIABLES */
+#define WRITE_TALON_CONFIGURATIONS (true)
 
 /* PID CONTROL */
 #define PROPORTIONAL_CONTROL (0.0022)
@@ -11,6 +12,7 @@
 #define ANGLE_DESIRED (0)
 #define SPEED_SCALAR (0.5)
 #define USE_JOYSTICK (false)
+#define MANUAL_INCREMENT (100)
 
 /* MOTOR DEFINITIONS*/
 #define RIGHT_PAYLOAD_LIFT_LEADER_DEVICENUMBER (53)
@@ -18,9 +20,6 @@
 
 #define LEFT_PAYLOAD_LIFT_LEADER_DEVICENUMBER (0)
 #define LEFT_PAYLOAD_LIFT_FOLLOWER_DEVICENUMBER (0)
-
-#define MANUAL_INCREMENT (100)
-#define WRITE_TALON_CONFIGURATIONS (true)
 
 /* TALON CONFIGURATION */
 #define TALON_PEAK_OUTPUT_FWD (0.5)
@@ -31,12 +30,14 @@
 #define TALON_RAMP_TIME (0)
 #define TALON_SLOT_IDX (0)
 
+/* MOTOR CONTROLLER INSTANTIATION */
 WPI_TalonSRX Right_Payload_Lift_Leader{RIGHT_PAYLOAD_LIFT_LEADER_DEVICENUMBER};
 WPI_TalonSRX Right_Payload_Lift_Follower{RIGHT_PAYLOAD_LIFT_FOLLOWER_DEVICENUMBER};
 
 WPI_TalonSRX Left_Payload_Lift_Leader{LEFT_PAYLOAD_LIFT_LEADER_DEVICENUMBER};
 WPI_TalonSRX Left_Payload_Lift_Follower{LEFT_PAYLOAD_LIFT_FOLLOWER_DEVICENUMBER};
 
+/* HANG GYRO INSTANTIATION */
 TeensyGyro teensyGyro;
 
 void HangMech::Init()
@@ -44,14 +45,14 @@ void HangMech::Init()
     ResetSensor();
 
     if (WRITE_TALON_CONFIGURATIONS)
-        WriteTalonConfigs();
+        writeTalonConfigs();
 
     Right_Payload_Lift_Follower.Follow(Right_Payload_Lift_Leader);
 }
 
 void HangMech::Hang_PercentOutput()
 {
-    // was used for trying to change control variables while Robot is running, is currently not enabled
+    // PID Tuning
     if (USE_JOYSTICK)
     {
         if (driver_one.GetRawButton(Y_BUTTON))
@@ -69,18 +70,23 @@ void HangMech::Hang_PercentOutput()
         derivative = DERIVATIVE_CONTROL;
     }
 
+    // Get the sensor measurement
     double angleActual = teensyGyro.GetAngleMeasurement();
 
+    // Determine the error
     double errorCurrent = ANGLE_DESIRED - angleActual;
+
+    // Determine change in error
     double errorChange = errorLast - errorCurrent;
 
-    double speedChanged = PROPORTIONAL_CONTROL * errorCurrent + DERIVATIVE_CONTROL * errorChange;
-    double speedNew = speedCurrent + speedChanged;
+    // Compute correction
+    double speedChange = PROPORTIONAL_CONTROL * errorCurrent + DERIVATIVE_CONTROL * errorChange;
 
-    if (speedNew > 1)
-        speedNew = 1;
-    else if (speedNew < -1)
-        speedNew = -1;
+    // Determine new set speed
+    double speedNew = speedCurrent + speedChange;
+
+    // Contrain
+    speedNew = Utils::Constrain(speedNew, -1, 1);
 
     speedNew *= SPEED_SCALAR;
 
@@ -117,14 +123,13 @@ void HangMech::ProcessSensorData()
     teensyGyro.ProcessSerialData();
 }
 
-void HangMech::logStatorCurrents(WPI_TalonSRX& motor, std::vector<double>& rawStator, std::vector<double>& smoothedStator)
+void HangMech::logStatorCurrents(WPI_TalonSRX *motor, std::vector<double> *rawStator, std::vector<double> *smoothedStator)
 {
-
 }
 
 bool HangMech::spikeDetected() { return true; }
 
-void HangMech::WriteTalonConfigs()
+void HangMech::writeTalonConfigs()
 {
     Right_Payload_Lift_Leader.ConfigPeakOutputForward(TALON_PEAK_OUTPUT_FWD);
     Right_Payload_Lift_Leader.ConfigPeakOutputReverse(TALON_PEAK_OUTPUT_REV);

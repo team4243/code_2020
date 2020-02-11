@@ -34,16 +34,19 @@
 #include <hal/SimDevice.h>
 #include "CIEColor.h"
 
-namespace rev {
+namespace rev
+{
 
 /**
  * REV Robotics Color Sensor V3.
  *
  * This class allows access to a REV Robotics color sensor V3 on an I2C bus. 
  */
-class ColorSensorV3 : public frc::ErrorBase {
-public:
-    enum class GainFactor {
+class ColorSensorV3 : public frc::ErrorBase
+{
+  public:
+    enum class GainFactor
+    {
         k1x = 0,
         k3x = 1,
         k6x = 2,
@@ -51,7 +54,8 @@ public:
         k18x = 4
     };
 
-    enum class LEDPulseFrequency {
+    enum class LEDPulseFrequency
+    {
         k60kHz = 0x18,
         k70kHz = 0x40,
         k80kHz = 0x28,
@@ -59,7 +63,8 @@ public:
         k100kHz = 0x38,
     };
 
-    enum class LEDCurrent {
+    enum class LEDCurrent
+    {
         kPulse2mA = 0,
         kPulse5mA = 1,
         kPulse10mA = 2,
@@ -70,14 +75,16 @@ public:
         kPulse125mA = 7,
     };
 
-    enum class ProximityResolution {
+    enum class ProximityResolution
+    {
         k8bit = 0x00,
         k9bit = 0x08,
         k10bit = 0x10,
         k11bit = 0x18,
     };
 
-    enum class ProximityMeasurementRate {
+    enum class ProximityMeasurementRate
+    {
         k6ms = 1,
         k12ms = 2,
         k25ms = 3,
@@ -87,7 +94,8 @@ public:
         k400ms = 7,
     };
 
-    enum class ColorResolution {
+    enum class ColorResolution
+    {
         k20bit = 0x00,
         k19bit = 0x08,
         k18bit = 0x10,
@@ -96,7 +104,8 @@ public:
         k13bit = 0x28,
     };
 
-    enum class ColorMeasurementRate {
+    enum class ColorMeasurementRate
+    {
         k25ms = 0,
         k50ms = 1,
         k100ms = 2,
@@ -106,7 +115,8 @@ public:
         k2000ms = 7,
     };
 
-    struct RawColor {
+    struct RawColor
+    {
         uint32_t red;
         uint32_t green;
         uint32_t blue;
@@ -125,8 +135,8 @@ public:
      */
     explicit ColorSensorV3(frc::I2C::Port port);
 
-    ColorSensorV3(ColorSensorV3&&) = default;
-    ColorSensorV3& operator=(ColorSensorV3&&) = default;
+    ColorSensorV3(ColorSensorV3 &&) = default;
+    ColorSensorV3 &operator=(ColorSensorV3 &&) = default;
 
     /**
      * Get the normalized RGB color from the sensor (normalized based on
@@ -193,7 +203,7 @@ public:
      *                  proximity sensor LED
      */
     void ConfigureProximitySensorLED(LEDPulseFrequency freq, LEDCurrent current, uint8_t pulses);
-    
+
     /**
      * Configure the proximity sensor.
      * 
@@ -206,7 +216,7 @@ public:
      * @param rate  Measurement rate of the proximity sensor
      */
     void ConfigureProximitySensor(ProximityResolution res, ProximityMeasurementRate rate);
-    
+
     /**
      * Configure the color sensor.
      * 
@@ -234,8 +244,9 @@ public:
      */
     bool HasReset();
 
-private:
-    enum class Register {
+  private:
+    enum class Register
+    {
         kMainCtrl = 0x00,
         kProximitySensorLED = 0x01,
         kProximitySensorPulses = 0x02,
@@ -251,37 +262,43 @@ private:
         kDataRed = 0x13
     };
 
-    enum class MainCtrlFields {
+    enum class MainCtrlFields
+    {
         kProximitySensorEnable = 0x01,
         kLightSensorEnable = 0x02,
         kRGBMode = 0x04
     };
 
-    struct MainStatus {
-        uint8_t PSDataStatus:1;
-        uint8_t PSInterruptStatus:1;
-        uint8_t PSLogicStatus:1;
-        uint8_t LSDataStatus:1;
-        uint8_t LSInterruptStatus:1;
-        uint8_t PowerOnStatus:1;
-        uint8_t :2;
+    struct MainStatus
+    {
+        uint8_t PSDataStatus : 1;
+        uint8_t PSInterruptStatus : 1;
+        uint8_t PSLogicStatus : 1;
+        uint8_t LSDataStatus : 1;
+        uint8_t LSInterruptStatus : 1;
+        uint8_t PowerOnStatus : 1;
+        uint8_t : 2;
     };
 
-    bool Write(Register reg, uint8_t data) {
+    bool Write(Register reg, uint8_t data)
+    {
         return m_i2c.Write(static_cast<uint8_t>(reg), data);
     }
 
-    bool Read(Register reg, int count, uint8_t* data) {
+    bool Read(Register reg, int count, uint8_t *data)
+    {
         return m_i2c.Read(static_cast<uint8_t>(reg), count, data);
     }
 
-    uint32_t To20Bit(uint8_t *val) {
+    uint32_t To20Bit(uint8_t *val)
+    {
         uint32_t result = 0;
         std::memcpy(&result, val, 3);
         return result & 0x03FFFF;
     }
-    
-    uint16_t To11Bit(uint8_t *val) {
+
+    uint16_t To11Bit(uint8_t *val)
+    {
         uint16_t result = 0;
         std::memcpy(&result, val, 2);
         return result & 0x7FF;

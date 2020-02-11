@@ -95,6 +95,7 @@ bool ColorSensorInterface::ColorMatchesColorFromFMS()
 {
     std::string reqestedColor = getColorFromFMS();
     std::string color = GetColorFromSensor(50.0);
+
     if (reqestedColor.compare(color) == 0)
         return true;
     else

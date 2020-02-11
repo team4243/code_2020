@@ -33,15 +33,17 @@
 
 #include <frc/util/Color.h>
 
-namespace rev {
+namespace rev
+{
 
 /**
  * REV Robotics Color Sensor V3.
  *
  * This class allows access to a REV Robotics color sensor V3 on an I2C bus. 
  */
-class ColorMatch {
-public:
+class ColorMatch
+{
+  public:
     ColorMatch();
     /**
      * Get the normalized color value [0 1]. Works best when within 2 inches and 
@@ -49,7 +51,7 @@ public:
      * 
      * @return  Color struct with normalized color values
      */
-    void AddColorMatch(const frc::Color& color);
+    void AddColorMatch(const frc::Color &color);
 
     /**
      * Set the confidence interval for determining color. Defaults to 0.95
@@ -67,7 +69,7 @@ public:
      * 
      * @return  Matched color if detected
      */
-    std::optional<frc::Color> MatchColor(const frc::Color& colorToMatch);
+    std::optional<frc::Color> MatchColor(const frc::Color &colorToMatch);
 
     /**
      * GetConfidence uses euclidean distance to compare a given normalized RGB IR 
@@ -78,7 +80,7 @@ public:
      * 
      * @return  Matched color if detected
      */
-    std::optional<frc::Color> MatchColor(const frc::Color& colorToMatch, double& confidence);
+    std::optional<frc::Color> MatchColor(const frc::Color &colorToMatch, double &confidence);
 
     /**
      * GetConfidence uses euclidean distance to compare a given normalized RGB IR 
@@ -89,11 +91,11 @@ public:
      * 
      * @return  Matched color if detected
      */
-    frc::Color MatchClosestColor(const frc::Color& colorToMatch, double& confidence);
+    frc::Color MatchClosestColor(const frc::Color &colorToMatch, double &confidence);
 
-private:
+  private:
     std::vector<frc::Color> m_colorsToMatch;
     double m_confidenceLevel;
 };
 
-}
+} // namespace rev

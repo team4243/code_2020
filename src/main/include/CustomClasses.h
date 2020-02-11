@@ -8,31 +8,27 @@
 #include "ctre/Phoenix.h"
 
 #include <vector>
-#include "string.h"
+#include <stdio.h>
+#include <string.h>
 
 #include "CIEColor.h"
 #include "ColorMatch.h"
 #include "ColorSensorV3.h"
 
+/* COMMAND BUTTON MAPPING */
+#define GYRO_ZERO_BUTTON (A_BUTTON)
+
+/* JOYSTICKS CONFIGURATION */
 #define PORT_JOYSTICK_DRIVER_ONE (0)
 #define PORT_JOYSTICK_DRIVER_TWO (1)
 
 #define INITIAL_VECTOR_SIZE (300)
 
-#define GYRO_ZERO_BUTTON (A_BUTTON)
-
+/* STATIC JOYSTICK INSTANTIATION */
 static frc::Joystick driver_one{PORT_JOYSTICK_DRIVER_ONE};
 static frc::Joystick driver_two{PORT_JOYSTICK_DRIVER_TWO};
 
-class Commands
-{
-public:
-  static double GetDrive_ForwardReverse();
-  static double GetDrive_Strafe();
-  static double GetDrive_Rotate();
-  static bool GetDrive_ZeroNavX();
-};
-
+/****************************************** DRIVE TRAIN ******************************************/
 class DriveTrain
 {
 public:
@@ -43,10 +39,10 @@ private:
   double max_stator_current = -1000;
   double min_stator_current = 1000;
 
-  void WriteTalonConfigs();
-  double DeadBand(double);
+  void writeTalonConfigs();
 };
 
+/****************************************** HANG MECH ******************************************/
 class HangMech
 {
 public:
@@ -63,7 +59,6 @@ private:
   std::vector<double> smoothedLeftStatorCurrent = std::vector<double>(INITIAL_VECTOR_SIZE);
   std::vector<double> smoothedRightStatorCurrent = std::vector<double>(INITIAL_VECTOR_SIZE);
 
-  void WriteTalonConfigs();
   bool button_pressed = false;
   double position;
 
@@ -73,10 +68,12 @@ private:
   double proportional = 0;
   double derivative = 0;
 
-  void logStatorCurrents(WPI_TalonSRX &motor, std::vector<double> &rawStator, std::vector<double> &smoothedStator);
+  void writeTalonConfigs();
+  void logStatorCurrents(WPI_TalonSRX *, std::vector<double> *, std::vector<double> *);
   bool spikeDetected();
 };
 
+/****************************************** CONTROL PANEL ******************************************/
 class ControlPanel
 {
 public:
@@ -89,7 +86,7 @@ class ColorSensorInterface
 public:
   ColorSensorInterface();
   ~ColorSensorInterface();
-  std::string GetColorFromSensor(double confidence);
+  std::string GetColorFromSensor(double);
   bool ColorMatchesColorFromFMS();
 
 private:
@@ -105,6 +102,7 @@ private:
   std::string getColorFromFMS();
 };
 
+/****************************************** TEENSY GYRO ******************************************/
 class TeensyGyro
 {
 public:
@@ -113,15 +111,13 @@ public:
   int GetAngleMeasurement();
 };
 
-class Utility
+/****************************************** UTILITIES ******************************************/
+class Utils
 {
 public:
-  //Sending report of the current to file
-  static int WriteToFile(std::iostream fh, std::string value)
-  {
-    fh << value << std::endl;
-    return 0;
-  }
+  static int WriteToFile(std::iostream, std::string);
+  static double DeadBand(double, double);
+  static double Constrain(double, double, double);
 };
 
 #endif

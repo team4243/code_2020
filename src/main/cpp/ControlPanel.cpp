@@ -3,10 +3,6 @@
 #include "ctre/Phoenix.h"
 #include "string.h"
 
-#include "CIEColor.h"
-#include "ColorMatch.h"
-#include "ColorSensorV3.h"
-
 #include "frc/smartdashboard/SmartDashboard.h"
 
 WPI_TalonSRX ControlPanel_Motor{56};
