@@ -46,7 +46,6 @@ WPI_TalonSRX leftRear_Follower{CHANNEL_TALON_LR_FOLLOWER};
 WPI_TalonSRX rightFront_Follower{CHANNEL_TALON_RF_FOLLOWER};
 WPI_TalonSRX rightRear_Follower{CHANNEL_TALON_RR_FOLLOWER};
 
-
 /* MECANUM DRIVE OBJECT INSTANTIATION */
 frc::MecanumDrive mecanumDrive{leftFront_Leader,
                                leftRear_Leader,
@@ -78,7 +77,7 @@ void DriveTrain::Drive()
     double joystick_Z = DeadBand(driver_one.GetRawAxis(RIGHT_WHEEL_X)) * SPEED_SCALAR;
 
     double gyroYaw = (double)navX_gyro.GetYaw();
-    
+
     SmartDashboard::PutNumber("The Robot Yawn", gyroYaw);
 
     // Field mode uses the GYRO YAW as an input
@@ -95,8 +94,10 @@ void DriveTrain::Drive()
     }
 
     double statCurrent = leftFront_Leader.GetStatorCurrent();
-    if(statCurrent < this->min_stator_current) this->min_stator_current = statCurrent;
-    if(statCurrent > this->max_stator_current) this->max_stator_current = statCurrent;
+    if (statCurrent < this->min_stator_current)
+        this->min_stator_current = statCurrent;
+    if (statCurrent > this->max_stator_current)
+        this->max_stator_current = statCurrent;
     SmartDashboard::PutNumber("LF Current", statCurrent);
     SmartDashboard::PutNumber("Max Current", this->max_stator_current);
     SmartDashboard::PutNumber("Min Current", this->min_stator_current);
