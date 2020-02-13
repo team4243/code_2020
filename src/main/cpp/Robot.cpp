@@ -22,6 +22,9 @@ void Robot::RobotInit()
 
     if (ENABLE_CONTROL_PANEL)
         controlPanel.Init();
+
+      if (ENABLE_DRIVER_CAMERAS)
+        driverCameras.Init();
 }
 /******************** ROBOT PERIODIC ********************/
 void Robot::RobotPeriodic()
@@ -37,10 +40,7 @@ void Robot::AutonomousInit() {}
 void Robot::AutonomousPeriodic() {}
 
 /******************** TELEOP INIT ********************/
-void Robot::TeleopInit() {
-    if (ENABLE_DRIVER_CAMERAS)
-        driverCameras.Init();
-}
+void Robot::TeleopInit() {}
 
 /******************** TELEOP PERIODIC ********************/
 void Robot::TeleopPeriodic()
