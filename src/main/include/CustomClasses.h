@@ -14,6 +14,7 @@
 #include "CIEColor.h"
 #include "ColorMatch.h"
 #include "ColorSensorV3.h"
+#include "cscore_oo.h"
 
 /* COMMAND BUTTON MAPPING */
 #define GYRO_ZERO_BUTTON (A_BUTTON)
@@ -73,6 +74,16 @@ private:
   bool spikeDetected();
 };
 
+/****************************************** DRIVER CAMERAS ******************************************/
+class DriverCameras
+{
+public:
+  cs::UsbCamera camera1;
+  cs::UsbCamera camera2;
+  cs::VideoSink server;
+
+  void Init();
+};
 /****************************************** CONTROL PANEL ******************************************/
 class ControlPanel
 {

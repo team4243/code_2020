@@ -4,10 +4,12 @@
 #define ENABLE_DRIVE_TRAIN (true)
 #define ENABLE_HANG_MECH (false)
 #define ENABLE_CONTROL_PANEL (false)
+#define ENABLE_DRIVER_CAMERAS (true)
 
 DriveTrain driveTrain;
 HangMech hangMech;
 ControlPanel controlPanel;
+DriverCameras driverCameras;
 
 /******************** ROBOT INIT ********************/
 void Robot::RobotInit()
@@ -21,7 +23,6 @@ void Robot::RobotInit()
     if (ENABLE_CONTROL_PANEL)
         controlPanel.Init();
 }
-
 /******************** ROBOT PERIODIC ********************/
 void Robot::RobotPeriodic()
 {
@@ -36,7 +37,10 @@ void Robot::AutonomousInit() {}
 void Robot::AutonomousPeriodic() {}
 
 /******************** TELEOP INIT ********************/
-void Robot::TeleopInit() {}
+void Robot::TeleopInit() {
+    if (ENABLE_DRIVER_CAMERAS)
+        driverCameras.Init();
+}
 
 /******************** TELEOP PERIODIC ********************/
 void Robot::TeleopPeriodic()

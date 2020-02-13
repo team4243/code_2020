@@ -43,24 +43,24 @@ namespace rev
  */
 class ColorMatch
 {
-  public:
-    ColorMatch();
-    /**
+public:
+  ColorMatch();
+  /**
      * Get the normalized color value [0 1]. Works best when within 2 inches and 
      * perpendicular to surface of interest.
      * 
      * @return  Color struct with normalized color values
      */
-    void AddColorMatch(const frc::Color &color);
+  void AddColorMatch(const frc::Color &color);
 
-    /**
+  /**
      * Set the confidence interval for determining color. Defaults to 0.95
      * 
      * @param confidence    A value between 0 and 1
      */
-    void SetConfidenceThreshold(double confidence);
+  void SetConfidenceThreshold(double confidence);
 
-    /**
+  /**
      * GetConfidence uses euclidean distance to compare a given normalized RGB IR 
      * vector against normalized calibrated coefficients for a swatch color. 
      * This distance is then normalized and subtracted from 1 to give a 
@@ -69,9 +69,9 @@ class ColorMatch
      * 
      * @return  Matched color if detected
      */
-    std::optional<frc::Color> MatchColor(const frc::Color &colorToMatch);
+  std::optional<frc::Color> MatchColor(const frc::Color &colorToMatch);
 
-    /**
+  /**
      * GetConfidence uses euclidean distance to compare a given normalized RGB IR 
      * vector against normalized calibrated coefficients for a swatch color. 
      * This distance is then normalized and subtracted from 1 to give a 
@@ -80,9 +80,9 @@ class ColorMatch
      * 
      * @return  Matched color if detected
      */
-    std::optional<frc::Color> MatchColor(const frc::Color &colorToMatch, double &confidence);
+  std::optional<frc::Color> MatchColor(const frc::Color &colorToMatch, double &confidence);
 
-    /**
+  /**
      * GetConfidence uses euclidean distance to compare a given normalized RGB IR 
      * vector against normalized calibrated coefficients for a swatch color. 
      * This distance is then normalized and subtracted from 1 to give a 
@@ -91,11 +91,11 @@ class ColorMatch
      * 
      * @return  Matched color if detected
      */
-    frc::Color MatchClosestColor(const frc::Color &colorToMatch, double &confidence);
+  frc::Color MatchClosestColor(const frc::Color &colorToMatch, double &confidence);
 
-  private:
-    std::vector<frc::Color> m_colorsToMatch;
-    double m_confidenceLevel;
+private:
+  std::vector<frc::Color> m_colorsToMatch;
+  double m_confidenceLevel;
 };
 
 } // namespace rev
