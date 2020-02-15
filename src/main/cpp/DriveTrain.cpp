@@ -7,7 +7,9 @@
 #include "AHRS.h"
 
 /* TUNING VARIABLES */
-#define SPEED_SCALAR (0.25)
+#define LOW_SPEED_SCALAR (0.05)
+#define HIGH_SPEED_SCALAR (0.25)
+
 #define WRITE_TALON_CONFIGURATIONS (false)
 #define USE_FIELD_MODE (false)
 #define DRIVE_JOYSTICK_DEADBAND (0.10)
@@ -65,6 +67,20 @@ void DriveTrain::Init()
 
 void DriveTrain::Drive()
 {
+    // shifting gears between slow speed and fast speed
+     //only read fast button if the low button is not being pressed
+    if (drive_train_controller.GetRawButton(BACK_BUTTON))
+    {
+        // put in low gear
+    }
+    else
+    {
+        if (drive_train_controller.GetRawButton(START_BUTTON))
+        {
+            //put in high gear
+        }
+    }
+
     // Get joystick values
     double joystick_X = driver_one.GetRawAxis(LEFT_WHEEL_X);
     double joystick_Y = -driver_one.GetRawAxis(LEFT_WHEEL_Y);
@@ -76,9 +92,19 @@ void DriveTrain::Drive()
     joystick_Z = Utils::DeadBand(joystick_Z, DRIVE_JOYSTICK_DEADBAND);
 
     // Scale
-    joystick_X *= SPEED_SCALAR;
-    joystick_Y *= SPEED_SCALAR;
-    joystick_Z *= SPEED_SCALAR;
+    if (is_fast)
+    {
+
+        joystick_X *= HIGH_SPEED_SCALAR;
+        joystick_Y *= HIGH_SPEED_SCALAR;
+        joystick_Z *= HIGH_SPEED_SCALAR;
+    }
+    else
+    {
+        joystick_X *= LOW_SPEED_SCALAR;
+        joystick_Y *= LOW_SPEED_SCALAR;
+        joystick_Z *= LOW_SPEED_SCALAR;
+    }
 
     // Constrain
     joystick_X = Utils::Constrain(joystick_X, -1, 1);
@@ -92,9 +118,9 @@ void DriveTrain::Drive()
 
     // Field mode uses the GYRO YAW as an input
     if (USE_FIELD_MODE)
-        mecanumDrive.DriveCartesian(joystick_X, joystick_Y, joystick_Z, gyroYaw);
+        mecanumDrive.DriveCartesian(joystick_Y, joystick_X, joystick_Z, gyroYaw);
     else
-        mecanumDrive.DriveCartesian(joystick_X, joystick_Y, joystick_Z);
+        mecanumDrive.DriveCartesian(joystick_Y, joystick_X, joystick_Z);
 
     if (driver_one.GetRawButton(GYRO_ZERO_BUTTON))
     {

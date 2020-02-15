@@ -26,13 +26,15 @@
 #define INITIAL_VECTOR_SIZE (300)
 
 /* STATIC JOYSTICK INSTANTIATION */
-static frc::Joystick driver_one{PORT_JOYSTICK_DRIVER_ONE};
-static frc::Joystick driver_two{PORT_JOYSTICK_DRIVER_TWO};
+static frc::Joystick drive_train_controller{PORT_JOYSTICK_DRIVER_ONE};
+static frc::Joystick payload_controller{PORT_JOYSTICK_DRIVER_TWO};
 
 /****************************************** DRIVE TRAIN ******************************************/
 class DriveTrain
 {
 public:
+  bool is_fast = (false);   //High gear for faster Driving 
+
   void Init();
   void Drive();
 
