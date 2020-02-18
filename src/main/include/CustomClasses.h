@@ -29,6 +29,12 @@
 #define MANUAL_HANG_LEFT_AXIS (LEFT_WHEEL_Y)
 #define MANUAL_HANG_RIGHT_AXIS (RIGHT_WHEEL_Y)
 
+/* COMMAND BUTTON MAPPING -- CONTROL PANEL */
+#define TOGGLE_SPIN_THRICE (Y_BUTTON)
+#define TOGGLE_MANUAL_TURN (X_BUTTON)
+#define TOGGLE_SPIN_TO_COLOUR (B_BUTTON)
+#define STOP_BUTTON_1 (LEFT_BUMPER)
+
 /* JOYSTICKS CONFIGURATION */
 #define PORT_JOYSTICK_DRIVER_ONE (0)
 #define PORT_JOYSTICK_DRIVER_TWO (1)
@@ -116,7 +122,19 @@ class ControlPanel
 {
 public:
   void Init();
-  void DoTheThing();
+  void Turn();
+
+private:
+  bool isManual = true;
+  bool isTurningThrice = false;
+  bool isTurningToColour = false;
+
+  void stopMotor();
+  void manualTurn();
+  void turnThreeTimes();
+  void turnToColour();
+  void commandChecks();
+  void writeTalonConfigs();
 };
 
 class ColorSensorInterface
