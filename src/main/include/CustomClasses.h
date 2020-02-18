@@ -26,6 +26,8 @@
 #define TOGGLE_AUTO_MODE_BUTTON_1 (LEFT_BUMPER)
 #define TOGGLE_AUTO_MODE_BUTTON_2 (RIGHT_BUMPER)
 #define HANG_GYRO_ZERO_BUTTON (A_BUTTON)
+#define MANUAL_HANG_LEFT_AXIS (LEFT_WHEEL_Y)
+#define MANUAL_HANG_RIGHT_AXIS (RIGHT_WHEEL_Y)
 
 /* JOYSTICKS CONFIGURATION */
 #define PORT_JOYSTICK_DRIVER_ONE (0)
@@ -46,7 +48,11 @@ public:
 
 private:
   bool useSlowSpeed = false;
+  bool pressedLastFrame_slowSpeed = false;
+
   bool useFieldMode = false;
+  bool pressedLastFrame_fieldMode = false;
+
   double gyroYaw = 0;
 
   void commandChecks();
@@ -62,6 +68,7 @@ public:
 
 private:
   bool useAutoHang = false;
+  bool pressedLastFrame_autoHang = false;
 
   void commandChecks();
   void writeTalonConfigs();
@@ -74,7 +81,7 @@ public:
   void UpdateEncoder();
   void UpdateMotorCurrent();
   void ManualHang(double);
-  void UpdatePosition(double positionChange);
+  void UpdatePosition(double);
 
   WPI_TalonSRX *Lift_Leader;
   WPI_TalonSRX *Lift_Follower;

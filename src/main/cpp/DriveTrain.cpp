@@ -112,28 +112,44 @@ void DriveTrain::commandChecks()
     // Check for FIELD MODE toggle and update dashboard
     if (driver_one.GetRawButton(TOGGLE_FIELD_MODE_BUTTON))
     {
-        // Toggle the mode
-        useFieldMode = !useFieldMode;
+        // Command button debounce
+        if (!pressedLastFrame_fieldMode)
+        {
+            pressedLastFrame_fieldMode = true;
 
-        // Print the mode
-        if (useFieldMode)
-            frc::SmartDashboard::PutString("Drive Mode:", "FIELD MODE");
-        else
-            frc::SmartDashboard::PutString("Drive Mode:", "BODY MODE");
+            // Toggle the mode
+            useFieldMode = !useFieldMode;
+
+            // Print the mode
+            if (useFieldMode)
+                frc::SmartDashboard::PutString("Drive Mode:", "FIELD MODE");
+            else
+                frc::SmartDashboard::PutString("Drive Mode:", "BODY MODE");
+        }
     }
+    else
+        pressedLastFrame_fieldMode = false;
 
     // Check for SLOW SPEED toggle and update dashboard
     if (driver_one.GetRawButton(TOGGLE_SLOW_SPEED_BUTTON))
     {
-        // Toggle the mode
-        useSlowSpeed = !useSlowSpeed;
+        // Command button debounce
+        if (!pressedLastFrame_slowSpeed)
+        {
+            pressedLastFrame_slowSpeed = true;
 
-        // Print the mode
-        if (useSlowSpeed)
-            frc::SmartDashboard::PutString("Drive Speed:", "SLOW");
-        else
-            frc::SmartDashboard::PutString("Drive Speed:", "FAST");
+            // Toggle the mode
+            useSlowSpeed = !useSlowSpeed;
+
+            // Print the mode
+            if (useSlowSpeed)
+                frc::SmartDashboard::PutString("Drive Speed:", "SLOW");
+            else
+                frc::SmartDashboard::PutString("Drive Speed:", "FAST");
+        }
     }
+    else
+        pressedLastFrame_slowSpeed = false;
 
     // Gyro functions for FIELD MODE
     if (useFieldMode)

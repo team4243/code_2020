@@ -25,39 +25,20 @@ void LiftArm::Init()
     Lift_Follower->Follow(*Lift_Leader);
 }
 
-void LiftArm::UpdateEncoder()
-{
-    encoder_value = Lift_Leader->GetSensorCollection().GetQuadraturePosition();
-}
-
-void LiftArm::UpdateMotorCurrent()
-{
-    // Get stator current
-    motor_current = Lift_Leader->GetStatorCurrent();
-
-    // Set MIN if lower
-    if (motor_current < min_motor_current)
-        min_motor_current = motor_current;
-
-    // Set MAX if higher
-    if (motor_current > max_motor_current)
-        max_motor_current = motor_current;
-}
-
-void LiftArm::ManualHang(double joystick)
+void LiftArm::ManualHang(double joystickInput)
 {
     // Deadband
-    joystick = Utils::DeadBand(joystick, HANG_JOYSTICK_DEADBAND);
+    joystickInput = Utils::DeadBand(joystickInput, HANG_JOYSTICK_DEADBAND);
 
     // Check for direction limit
-    if ((max_reached && joystick > 0) || (min_reached && joystick < 0))
-        joystick = 0;
+    if ((max_reached && joystickInput > 0) || (min_reached && joystickInput < 0))
+        joystickInput = 0;
 
     // Scale
-    joystick *= MANUAL_HANG_SPEED;
+    joystickInput *= MANUAL_HANG_SPEED;
 
     // Update position
-    UpdatePosition(joystick * COUNTS_PER_REVOLUTION);
+    UpdatePosition(joystickInput * COUNTS_PER_REVOLUTION);
 }
 
 void LiftArm::UpdatePosition(double positionChange)
@@ -83,4 +64,23 @@ void LiftArm::UpdatePosition(double positionChange)
     // Stop!!
     else if (max_reached || min_reached)
         Lift_Leader->Set(ControlMode::PercentOutput, 0);
+}
+
+void LiftArm::UpdateEncoder()
+{
+    encoder_value = Lift_Leader->GetSensorCollection().GetQuadraturePosition();
+}
+
+void LiftArm::UpdateMotorCurrent()
+{
+    // Get stator current
+    motor_current = Lift_Leader->GetStatorCurrent();
+
+    // Set MIN if lower
+    if (motor_current < min_motor_current)
+        min_motor_current = motor_current;
+
+    // Set MAX if higher
+    if (motor_current > max_motor_current)
+        max_motor_current = motor_current;
 }

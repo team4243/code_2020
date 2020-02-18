@@ -62,6 +62,13 @@ void HangMech::Hang()
     // Check for driver commands
     commandChecks();
 
+    // Update sensor readings
+    LeftArm.UpdateEncoder();
+    RightArm.UpdateEncoder();
+
+    LeftArm.UpdateMotorCurrent();
+    RightArm.UpdateMotorCurrent();
+
     // AUTO
     if (useAutoHang)
     {
@@ -87,8 +94,8 @@ void HangMech::Hang()
     // MANUAL
     else
     {
-        LeftArm.ManualHang(-driver_two.GetRawAxis(LEFT_WHEEL_Y));
-        RightArm.ManualHang(-driver_two.GetRawAxis(RIGHT_WHEEL_Y));
+        LeftArm.ManualHang(-driver_two.GetRawAxis(MANUAL_HANG_LEFT_AXIS));
+        RightArm.ManualHang(-driver_two.GetRawAxis(MANUAL_HANG_RIGHT_AXIS));
     }
 
     // Print positions
@@ -102,8 +109,13 @@ void HangMech::Hang()
     frc::SmartDashboard::PutString("RIGHT Limit High:", (RightArm.max_reached ? "TRIGGERED" : ""));
     frc::SmartDashboard::PutString("RIGHT Limit Low:", (RightArm.min_reached ? "TRIGGERED" : ""));
 
-    // TODO: Print encoder values
-    // TODO: Print stator current, min & max currents
+    // Print encoder values
+    frc::SmartDashboard::PutNumber("LEFT Encoder:", LeftArm.encoder_value);
+    frc::SmartDashboard::PutNumber("RIGHT Encoder:", RightArm.encoder_value);
+
+    // Print stator current, min & max currents
+    frc::SmartDashboard::PutNumber("LEFT Current:", LeftArm.motor_current);
+    frc::SmartDashboard::PutNumber("RIGHT Current:", RightArm.motor_current);
 }
 
 void HangMech::commandChecks()
@@ -114,15 +126,23 @@ void HangMech::commandChecks()
     // Check for HANG MODE toggle and update dashboard
     if (autoPressed_1 && autoPressed_2)
     {
-        // Toggle the mode
-        useAutoHang = !useAutoHang;
+        // Command button debounce
+        if (!pressedLastFrame_autoHang)
+        {
+            pressedLastFrame_autoHang = true;
 
-        // Print the mode
-        if (useAutoHang)
-            frc::SmartDashboard::PutString("Hang Mode:", "AUTO");
-        else
-            frc::SmartDashboard::PutString("Hang Mode:", "MANUAL");
+            // Toggle the mode
+            useAutoHang = !useAutoHang;
+
+            // Print the mode
+            if (useAutoHang)
+                frc::SmartDashboard::PutString("Hang Mode:", "AUTO");
+            else
+                frc::SmartDashboard::PutString("Hang Mode:", "MANUAL");
+        }
     }
+    else
+        pressedLastFrame_autoHang = false;
 }
 
 void HangMech::writeTalonConfigs()
