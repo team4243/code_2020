@@ -6,6 +6,7 @@
 #include "frc/Joystick.h"
 #include "ButtonMap.h"
 #include "ctre/Phoenix.h"
+#include "frc/DigitalInput.h"
 
 #include <vector>
 #include <stdio.h>
@@ -16,8 +17,15 @@
 #include "ColorSensorV3.h"
 #include "cscore_oo.h"
 
-/* COMMAND BUTTON MAPPING */
-#define GYRO_ZERO_BUTTON (A_BUTTON)
+/* COMMAND BUTTON MAPPING -- DRIVE TRAIN */
+#define DRIVE_GYRO_ZERO_BUTTON (A_BUTTON)
+#define TOGGLE_SLOW_SPEED_BUTTON (BACK_BUTTON)
+#define TOGGLE_FIELD_MODE_BUTTON (START_BUTTON)
+
+/* COMMAND BUTTON MAPPING -- HANG MECH */
+#define TOGGLE_AUTO_MODE_BUTTON_1 (LEFT_BUMPER)
+#define TOGGLE_AUTO_MODE_BUTTON_2 (RIGHT_BUMPER)
+#define HANG_GYRO_ZERO_BUTTON (A_BUTTON)
 
 /* JOYSTICKS CONFIGURATION */
 #define PORT_JOYSTICK_DRIVER_ONE (0)
@@ -26,22 +34,22 @@
 #define INITIAL_VECTOR_SIZE (300)
 
 /* STATIC JOYSTICK INSTANTIATION */
-static frc::Joystick drive_train_controller{PORT_JOYSTICK_DRIVER_ONE};
-static frc::Joystick payload_controller{PORT_JOYSTICK_DRIVER_TWO};
+static frc::Joystick driver_one{PORT_JOYSTICK_DRIVER_ONE};
+static frc::Joystick driver_two{PORT_JOYSTICK_DRIVER_TWO};
 
 /****************************************** DRIVE TRAIN ******************************************/
 class DriveTrain
 {
 public:
-  bool is_fast = (false);   //High gear for faster Driving 
-
   void Init();
   void Drive();
 
 private:
-  double max_stator_current = -1000;
-  double min_stator_current = 1000;
+  bool useSlowSpeed = false;
+  bool useFieldMode = false;
+  double gyroYaw = 0;
 
+  void commandChecks();
   void writeTalonConfigs();
 };
 
@@ -50,30 +58,39 @@ class HangMech
 {
 public:
   void Init();
-  void Hang_PercentOutput();
-  void Hang_Position();
-
-  void ProcessSensorData();
-  void ResetSensor();
+  void Hang();
 
 private:
-  std::vector<double> leftStatorCurrent = std::vector<double>(INITIAL_VECTOR_SIZE);
-  std::vector<double> rightStatorCurrent = std::vector<double>(INITIAL_VECTOR_SIZE);
-  std::vector<double> smoothedLeftStatorCurrent = std::vector<double>(INITIAL_VECTOR_SIZE);
-  std::vector<double> smoothedRightStatorCurrent = std::vector<double>(INITIAL_VECTOR_SIZE);
+  bool useAutoHang = false;
 
-  bool button_pressed = false;
-  double position;
-
-  double speedCurrent = 0;
-  double errorLast = 0;
-
-  double proportional = 0;
-  double derivative = 0;
-
+  void commandChecks();
   void writeTalonConfigs();
-  void logStatorCurrents(WPI_TalonSRX *, std::vector<double> *, std::vector<double> *);
-  bool spikeDetected();
+};
+
+class LiftArm
+{
+public:
+  void Init();
+  void UpdateEncoder();
+  void UpdateMotorCurrent();
+  void ManualHang(double);
+  void UpdatePosition(double positionChange);
+
+  WPI_TalonSRX *Lift_Leader;
+  WPI_TalonSRX *Lift_Follower;
+
+  frc::DigitalInput *Limit_High;
+  frc::DigitalInput *Limit_Low;
+
+  bool max_reached = false;
+  bool min_reached = false;
+
+  double current_position = 0;
+  double encoder_value = 0;
+
+  double motor_current = 0;
+  double min_motor_current = 1000;
+  double max_motor_current = -1000;
 };
 
 /****************************************** DRIVER CAMERAS ******************************************/
@@ -86,6 +103,7 @@ public:
 
   void Init();
 };
+
 /****************************************** CONTROL PANEL ******************************************/
 class ControlPanel
 {
@@ -119,9 +137,9 @@ private:
 class TeensyGyro
 {
 public:
-  void Reset();
-  void ProcessSerialData();
-  int GetAngleMeasurement();
+  static void Reset();
+  static void ProcessSerialData();
+  static int GetAngleMeasurement();
 };
 
 /****************************************** UTILITIES ******************************************/
