@@ -1,9 +1,11 @@
 #include "Robot.h"
 #include "CustomClasses.h"
 
+#include "frc/smartdashboard/SmartDashboard.h"
+
 /* SYSTEM ENABLING */
-#define ENABLE_DRIVE_TRAIN (true)
-#define ENABLE_HANG_MECH (false)
+#define ENABLE_DRIVE_TRAIN (false)
+#define ENABLE_HANG_MECH (true)
 #define ENABLE_CONTROL_PANEL (false)
 #define ENABLE_DRIVER_CAMERAS (false)
 
@@ -28,11 +30,20 @@ void Robot::RobotInit()
     if (ENABLE_DRIVER_CAMERAS)
         driverCameras.Init();
 }
+
 /******************** ROBOT PERIODIC ********************/
 void Robot::RobotPeriodic()
 {
     if (ENABLE_HANG_MECH)
+    {
         TeensyGyro::ProcessSerialData();
+
+        // Get gyro angle
+        double angle = TeensyGyro::GetAngleMeasurement(); // degrees
+
+        // Print gyro angle
+        frc::SmartDashboard::PutNumber("Hang Gyro:", angle);
+    }
 }
 
 /******************** AUTONOMOUS INIT ********************/

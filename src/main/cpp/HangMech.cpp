@@ -24,8 +24,8 @@
 #define RIGHT_LOW_DIO_CHANNEL_NUM (3)
 
 /* MOTOR DEFINITIONS*/
-#define RIGHT_PAYLOAD_LIFT_LEADER_DEVICENUMBER (53)
-#define RIGHT_PAYLOAD_LIFT_FOLLOWER_DEVICENUMBER (54)
+#define RIGHT_PAYLOAD_LIFT_LEADER_DEVICENUMBER (2)
+#define RIGHT_PAYLOAD_LIFT_FOLLOWER_DEVICENUMBER (58)
 
 #define LEFT_PAYLOAD_LIFT_LEADER_DEVICENUMBER (0)
 #define LEFT_PAYLOAD_LIFT_FOLLOWER_DEVICENUMBER (0)
@@ -64,19 +64,16 @@ void HangMech::Hang()
 
     // Update sensor readings
     LeftArm.UpdateEncoder();
-    RightArm.UpdateEncoder();
+    //RightArm.UpdateEncoder();
 
     LeftArm.UpdateMotorCurrent();
-    RightArm.UpdateMotorCurrent();
+    //RightArm.UpdateMotorCurrent();
 
     // AUTO
     if (useAutoHang)
     {
         // Get gyro angle
         double angle = TeensyGyro::GetAngleMeasurement(); // degrees
-
-        // Print gyro angle
-        frc::SmartDashboard::PutNumber("Hang Gyro:", angle);
 
         // Computation stuff, ya know... math
         double speed = AUTO_HANG_SPEED * angle; // degrees per second
@@ -88,34 +85,34 @@ void HangMech::Hang()
         changed_position /= degree_per_revolution; // revolutions per loop
 
         LeftArm.UpdatePosition(-changed_position);
-        RightArm.UpdatePosition(changed_position);
+        //RightArm.UpdatePosition(changed_position);
     }
 
     // MANUAL
     else
     {
         LeftArm.ManualHang(-driver_two.GetRawAxis(MANUAL_HANG_LEFT_AXIS));
-        RightArm.ManualHang(-driver_two.GetRawAxis(MANUAL_HANG_RIGHT_AXIS));
+        //RightArm.ManualHang(-driver_two.GetRawAxis(MANUAL_HANG_RIGHT_AXIS));
     }
 
     // Print positions
     frc::SmartDashboard::PutNumber("LEFT Position:", LeftArm.current_position);
-    frc::SmartDashboard::PutNumber("RIGHT Position:", RightArm.current_position);
+    //frc::SmartDashboard::PutNumber("RIGHT Position:", RightArm.current_position);
 
     // Print limit switch triggers
     frc::SmartDashboard::PutString("LEFT Limit High:", (LeftArm.max_reached ? "TRIGGERED" : ""));
     frc::SmartDashboard::PutString("LEFT Limit Low:", (LeftArm.min_reached ? "TRIGGERED" : ""));
 
-    frc::SmartDashboard::PutString("RIGHT Limit High:", (RightArm.max_reached ? "TRIGGERED" : ""));
-    frc::SmartDashboard::PutString("RIGHT Limit Low:", (RightArm.min_reached ? "TRIGGERED" : ""));
+    //frc::SmartDashboard::PutString("RIGHT Limit High:", (RightArm.max_reached ? "TRIGGERED" : ""));
+    //frc::SmartDashboard::PutString("RIGHT Limit Low:", (RightArm.min_reached ? "TRIGGERED" : ""));
 
     // Print encoder values
     frc::SmartDashboard::PutNumber("LEFT Encoder:", LeftArm.encoder_value);
-    frc::SmartDashboard::PutNumber("RIGHT Encoder:", RightArm.encoder_value);
+    //frc::SmartDashboard::PutNumber("RIGHT Encoder:", RightArm.encoder_value);
 
     // Print stator current, min & max currents
     frc::SmartDashboard::PutNumber("LEFT Current:", LeftArm.motor_current);
-    frc::SmartDashboard::PutNumber("RIGHT Current:", RightArm.motor_current);
+    //frc::SmartDashboard::PutNumber("RIGHT Current:", RightArm.motor_current);
 }
 
 void HangMech::commandChecks()
@@ -154,10 +151,10 @@ void HangMech::writeTalonConfigs()
     LeftArm.Lift_Leader->Config_kD(HANG_SLOT_IDX, HANG_DERIVATIVE_CTRL);
     LeftArm.Lift_Leader->Config_kF(HANG_SLOT_IDX, HANG_FEED_FWD_CTRL);
 
-    RightArm.Lift_Leader->ConfigPeakOutputForward(HANG_PEAK_OUTPUT_FWD);
-    RightArm.Lift_Leader->ConfigPeakOutputReverse(HANG_PEAK_OUTPUT_REV);
-    RightArm.Lift_Leader->ConfigClosedloopRamp(HANG_RAMP_TIME);
-    RightArm.Lift_Leader->Config_kP(HANG_SLOT_IDX, HANG_PROPORTIONAL_CTRL);
-    RightArm.Lift_Leader->Config_kD(HANG_SLOT_IDX, HANG_DERIVATIVE_CTRL);
-    RightArm.Lift_Leader->Config_kF(HANG_SLOT_IDX, HANG_FEED_FWD_CTRL);
+    // RightArm.Lift_Leader->ConfigPeakOutputForward(HANG_PEAK_OUTPUT_FWD);
+    // RightArm.Lift_Leader->ConfigPeakOutputReverse(HANG_PEAK_OUTPUT_REV);
+    // RightArm.Lift_Leader->ConfigClosedloopRamp(HANG_RAMP_TIME);
+    // RightArm.Lift_Leader->Config_kP(HANG_SLOT_IDX, HANG_PROPORTIONAL_CTRL);
+    // RightArm.Lift_Leader->Config_kD(HANG_SLOT_IDX, HANG_DERIVATIVE_CTRL);
+    // RightArm.Lift_Leader->Config_kF(HANG_SLOT_IDX, HANG_FEED_FWD_CTRL);
 }
