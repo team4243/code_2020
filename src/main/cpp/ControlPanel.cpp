@@ -12,7 +12,8 @@
 #define CONTROLPANEL_TRIGGER_DEADBAND (0.15)
 
 /* TALON SRX CAN DEVICE(S)*/
-#define CONTROL_PANEL_DEVICE_NUMBER (0) //do we have a follower?
+#define CONTROL_PANEL_DEVICE_NUMBER (2) //do we have a follower?
+#define FOLLOW_CTRL_PANEL_DEVICE_NUMBER (58)
 
 /* TALON CONFIGURATION */
 #define CONTROLPANEL_PEAK_OUTPUT_FWD (0.5)
@@ -24,6 +25,7 @@
 #define CONTROLPANEL_SLOT_IDX (0)
 
 WPI_TalonSRX ControlPanel_Motor{CONTROL_PANEL_DEVICE_NUMBER};
+WPI_TalonSRX FollowControlPanel_Motor{FOLLOW_CTRL_PANEL_DEVICE_NUMBER};
 
 ColorSensorInterface colorSensorInterface;
 
@@ -41,6 +43,9 @@ void ControlPanel::Init()
     Need a way to count whole revolutions of the control panel in order to automate for
     ROTATION control.*/
 
+//Control Panel Follower TEMP DELETE LATER
+ FollowControlPanel_Motor.Follow(ControlPanel_Motor);
+ 
     if (driver_two.GetRawButton(B_BUTTON))
     {
         ControlPanel_Motor.Set(0.1);
@@ -76,7 +81,7 @@ void ControlPanel::manualTurn()
     double triggerValue = driver_two.GetRawAxis(RIGHT_TRIGGER);
     triggerValue = Utils::DeadBand(triggerValue, CONTROLPANEL_TRIGGER_DEADBAND);
 
-    ControlPanel_Motor.Set(ControlMode::PercentOutput, CONTROL_PANEL_SCALAR * (triggerValue * 100));
+    ControlPanel_Motor.Set(ControlMode::PercentOutput, CONTROL_PANEL_SCALAR * triggerValue);
 }
 
 void ControlPanel::turnThreeTimes()
