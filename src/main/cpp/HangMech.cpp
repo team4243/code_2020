@@ -184,3 +184,55 @@ void HangMech::writeTalonConfigs()
     // RightArm.Lift_Leader->Config_kD(HANG_SLOT_IDX, HANG_DERIVATIVE_CTRL);
     // RightArm.Lift_Leader->Config_kF(HANG_SLOT_IDX, HANG_FEED_FWD_CTRL);
 }
+
+// not using this one this year, useful for reference/learning in the future
+// void HangMech::Hang_PercentOutput() 
+// {
+//     // PID Tuning
+//     if (USE_JOYSTICK)
+//     {
+//         if (driver_two.GetRawButton(Y_BUTTON))
+//             proportional += 0.0001;
+//         if (driver_two.GetRawButton(X_BUTTON))
+//             proportional -= 0.0001;
+//         if (driver_two.GetRawButton(B_BUTTON))
+//             derivative += 0.0001;
+//         if (driver_two.GetRawButton(A_BUTTON))
+//             derivative -= 0.0001;
+//     }
+//     else
+//     {
+//         proportional = PROPORTIONAL_CONTROL;
+//         derivative = DERIVATIVE_CONTROL;
+//     }
+
+//     // Get the sensor measurement
+//     double angleActual = teensyGyro.GetAngleMeasurement();
+
+//     // Determine the error
+//     double errorCurrent = ANGLE_DESIRED - angleActual;
+
+//     // Determine change in error
+//     double errorChange = errorLast - errorCurrent;
+
+//     // Compute correction
+//     double speedChange = PROPORTIONAL_CONTROL * errorCurrent + DERIVATIVE_CONTROL * errorChange;
+
+//     // Determine new set speed
+//     double speedNew = speedCurrent + speedChange;
+
+//     // Contrain
+//     speedNew = Utils::Constrain(speedNew, -1, 1);
+
+//     speedNew *= SPEED_SCALAR;
+
+//     Right_Payload_Lift_Leader.Set(ControlMode::PercentOutput, speedNew);
+
+//     errorLast = errorCurrent;
+//     speedCurrent = speedNew;
+
+//     frc::SmartDashboard::PutNumber("Angle:", angleActual);
+//     frc::SmartDashboard::PutNumber("Speed:", speedCurrent);
+//     frc::SmartDashboard::PutNumber("Proportional:", proportional);
+//     frc::SmartDashboard::PutNumber("Derivative:", derivative);
+// }
