@@ -71,7 +71,7 @@ void Robot::TeleopPeriodic()
         hangMech.Hang();
 
     if (ENABLE_CONTROL_PANEL)
-        controlPanel.DoTheThing();
+        controlPanel.Turn();
 }
 
 void Robot::TestPeriodic() {}
