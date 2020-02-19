@@ -71,6 +71,7 @@ class HangMech
 public:
   void Init();
   void Hang();
+  void CurrentSpiked();
 
 private:
   bool useAutoHang = false;

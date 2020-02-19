@@ -149,6 +149,25 @@ void HangMech::commandChecks()
         pressedLastFrame_autoHang = false;
 }
 
+void HangMech::CurrentSpiked()
+{
+    // a work in progress :(
+
+    // for (int i = 0; i < 5; i++) {
+    //     right_temp_values += Right_Payload_Lift_Leader.GetStatorCurrents();
+    //     left_temp_values += Left_Payload_Lift_Leader.GetStatorCurrent();
+    //     if (i == 4) {
+            
+    //     }
+    // }
+
+    // if (spike_in_current)
+    //     {
+    //         Right_Payload_Lift_Leader.Set(ControlMode::PercentOutput, 0);
+    //         Left_Payload_Lift_Leader.Set(ControlMode::PercentOutput, 0);
+    //     }
+}
+
 void HangMech::writeTalonConfigs()
 {
     LeftArm.Lift_Leader->ConfigPeakOutputForward(HANG_PEAK_OUTPUT_FWD);
