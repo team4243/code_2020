@@ -47,12 +47,18 @@ void Robot::RobotPeriodic()
 }
 
 /******************** AUTONOMOUS INIT ********************/
+//Initialization is carried out in Robot Init -Programming
+
 void Robot::AutonomousInit() {}
 
 /******************** AUTONOMOUS PERIODIC ********************/
+//Have Robot drive (x)ft based off of autonomous scoring
+
 void Robot::AutonomousPeriodic() {}
 
 /******************** TELEOP INIT ********************/
+//Initialization is carried out in Robot Init -Programming
+
 void Robot::TeleopInit() {}
 
 /******************** TELEOP PERIODIC ********************/

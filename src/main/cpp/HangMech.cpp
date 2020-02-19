@@ -5,6 +5,10 @@
 
 #include "frc/DigitalInput.h"
 
+//#define RIGHT_ARM_EXISTS (true)
+/* It's a way to make only one change in one place to enable or disable code (look at 
+end of //AUTO)*/
+
 /* TUNING VARIABLES */
 #define WRITE_TALON_CONFIGURATIONS (true)
 #define AUTO_HANG_SPEED (0.01)
@@ -86,6 +90,9 @@ void HangMech::Hang()
 
         LeftArm.UpdatePosition(-changed_position);
         //RightArm.UpdatePosition(changed_position);
+#ifdef RIGHT_ARM_EXISTS        
+        RightArm.UpdatePosition(changed_position);
+#endif         
     }
 
     // MANUAL
