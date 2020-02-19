@@ -12,7 +12,7 @@
 #define CONTROLPANEL_TRIGGER_DEADBAND (0.15)
 
 /* TALON SRX CAN DEVICE(S)*/
-#define CONTROL_PANEL_DEVICE_NUMBER (56) //do we have a follower?
+#define CONTROL_PANEL_DEVICE_NUMBER (0) //do we have a follower?
 
 /* TALON CONFIGURATION */
 #define CONTROLPANEL_PEAK_OUTPUT_FWD (0.5)
@@ -40,6 +40,7 @@ void ControlPanel::Init()
     
     Need a way to count whole revolutions of the control panel in order to automate for
     ROTATION control.*/
+
     if (driver_two.GetRawButton(B_BUTTON))
     {
         ControlPanel_Motor.Set(0.1);

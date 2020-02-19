@@ -10,7 +10,7 @@
 end of //AUTO)*/
 
 /* TUNING VARIABLES */
-#define WRITE_TALON_CONFIGURATIONS (true)
+#define WRITE_TALON_CONFIGURATIONS (false)
 #define AUTO_HANG_SPEED (0.01)
 
 /* AUTO HANG VARIABLES */
@@ -28,11 +28,11 @@ end of //AUTO)*/
 #define RIGHT_LOW_DIO_CHANNEL_NUM (3)
 
 /* MOTOR DEFINITIONS*/
-#define RIGHT_PAYLOAD_LIFT_LEADER_DEVICENUMBER (2)
-#define RIGHT_PAYLOAD_LIFT_FOLLOWER_DEVICENUMBER (58)
+#define LEFT_PAYLOAD_LIFT_LEADER_DEVICENUMBER (2)
+#define LEFT_PAYLOAD_LIFT_FOLLOWER_DEVICENUMBER (58)
 
-#define LEFT_PAYLOAD_LIFT_LEADER_DEVICENUMBER (0)
-#define LEFT_PAYLOAD_LIFT_FOLLOWER_DEVICENUMBER (0)
+#define RIGHT_PAYLOAD_LIFT_LEADER_DEVICENUMBER (0)
+#define RIGHT_PAYLOAD_LIFT_FOLLOWER_DEVICENUMBER (0)
 
 /* TALON CONFIGURATION */
 #define HANG_PEAK_OUTPUT_FWD (0.5)
@@ -90,9 +90,9 @@ void HangMech::Hang()
 
         LeftArm.UpdatePosition(-changed_position);
         //RightArm.UpdatePosition(changed_position);
-#ifdef RIGHT_ARM_EXISTS        
-        RightArm.UpdatePosition(changed_position);
-#endif         
+// #ifdef RIGHT_ARM_EXISTS        
+//         RightArm.UpdatePosition(changed_position);
+// #endif         
     }
 
     // MANUAL

@@ -30,10 +30,6 @@ void LiftArm::ManualHang(double joystickInput)
     // Deadband
     joystickInput = Utils::DeadBand(joystickInput, HANG_JOYSTICK_DEADBAND);
 
-    // Check for direction limit
-    if ((max_reached && joystickInput > 0) || (min_reached && joystickInput < 0))
-        joystickInput = 0;
-
     // Scale
     joystickInput *= MANUAL_HANG_SPEED;
 
