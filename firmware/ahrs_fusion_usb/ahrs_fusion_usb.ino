@@ -9,6 +9,10 @@
 #define MAX_REJECTIONS 5
 #define REJECTION_THRESHOLD 20
 
+#define AVG_BUFFER 10
+
+int averages[AVG_BUFFER];
+
 int last_angle = 0;
 int rejection_count = 0;
 
@@ -35,6 +39,8 @@ Madgwick filter;
 void setup()
 {
   Serial.begin(115200);
+  zero();
+
   if (!gyro.begin()) {}
 
   if (!accelmag.begin(ACCEL_RANGE_2G)) {}
@@ -85,19 +91,36 @@ void loop(void)
     if (++rejection_count < MAX_REJECTIONS) return;
   }
 
-  last_angle = angle;
+  int sum = 0;
+  for (int x = 0; x < sizeof(averages) - 1; x++)
+  {
+    averages[x] = averages[x + 1];
+    sum += averages[x];
+  }
+  averages[sizeof(averages) - 1] = angle;
+  sum += averages[sizeof(averages) - 1];
+
+  sum /= sizeof(averages);
+
+  last_angle = sum;
   rejection_count = 0;
 
   if (Serial.available())
   {
+    zero();
     pitch_offset = angle;
     accel_offset = accel_event.acceleration.x;
     while (Serial.available())Serial.read();
   }
 
   Serial.print('#');
-//  Serial.print(angle);
-//  Serial.print("      #");
+  //  Serial.print(angle);
+  //  Serial.print("      #");
   Serial.println((int)(map(accel_event.acceleration.x - accel_offset, -9.8, 9.8, 45, -45) * 1.5));
   delay(100);
+}
+
+void zero()
+{
+  for (int x = 0; x < sizeof(averages); x++) averages[x] = 0;
 }
