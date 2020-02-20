@@ -124,8 +124,8 @@ void HangMech::Hang()
 
 void HangMech::commandChecks()
 {
-    bool autoPressed_1 = driver_two.GetRawButton(TOGGLE_AUTO_MODE_BUTTON_1);
-    bool autoPressed_2 = driver_two.GetRawButton(TOGGLE_AUTO_MODE_BUTTON_2);
+    bool autoPressed_1 = driver_two.GetRawButton(TOGGLE_AUTO_MODE_BUTTON);
+    bool autoPressed_2 = driver_two.GetRawButton(TOGGLE_HANG_MECH_AUTO);
 
     // Check for HANG MODE toggle and update dashboard
     if (autoPressed_1 && autoPressed_2)

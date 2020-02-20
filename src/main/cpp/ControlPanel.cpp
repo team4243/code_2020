@@ -73,7 +73,7 @@ void ControlPanel::Turn()
 
 void ControlPanel::manualTurn()
 {
-    double triggerValue = driver_two.GetRawAxis(RIGHT_TRIGGER);
+    double triggerValue = driver_two.GetRawAxis(CONTROL_PANEL_TURN_AXIS);
     triggerValue = Utils::DeadBand(triggerValue, CONTROLPANEL_TRIGGER_DEADBAND);
 
     ControlPanel_Motor.Set(ControlMode::PercentOutput, CONTROL_PANEL_SCALAR * (triggerValue * 100));

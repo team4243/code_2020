@@ -72,9 +72,9 @@ void DriveTrain::Drive()
     commandChecks();
 
     // Get joystick values
-    double joystick_X = driver_one.GetRawAxis(LEFT_WHEEL_X);
-    double joystick_Y = -driver_one.GetRawAxis(LEFT_WHEEL_Y);
-    double joystick_Z = driver_one.GetRawAxis(RIGHT_WHEEL_X);
+    double joystick_X = driver_one.GetRawAxis(JOYSTICK_X_AXIS);
+    double joystick_Y = -driver_one.GetRawAxis(JOYSTICK_Y_AXIS);
+    double joystick_Z = driver_one.GetRawAxis(JOYSTICK_Z_AXIS);
 
     // Deadband (set values within +- deadband to zero)
     joystick_X = Utils::DeadBand(joystick_X, DRIVE_JOYSTICK_DEADBAND);
