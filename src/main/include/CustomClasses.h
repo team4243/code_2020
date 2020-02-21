@@ -134,14 +134,27 @@ public:
   void Turn();
 
 private:
+  std::string first_colour = "";
+  std::string previous_colour = "";
+  std::string current_mode = "";
+
+  int confidence_count = 0;
+  int num_colour_changed = 0;
+
   bool isManual = true;
+  bool pressedLastFrame_isManual = false;
+
   bool isTurningThrice = false;
+  // bool pressedLastFrame_isTurningThrice = false;
+
   bool isTurningToColour = false;
+  // bool pressedLastFrame_isTurningToColour = false;
 
   void stopMotor();
   void manualTurn();
   void turnThreeTimes();
   void turnToColour();
+  void countTurns();
   void commandChecks();
   void writeTalonConfigs();
 };
