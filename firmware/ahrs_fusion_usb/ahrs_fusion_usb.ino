@@ -1,12 +1,17 @@
 #include <Wire.h>
+#include <Math.h>
+
 #include <Adafruit_Sensor.h>
 #include <Adafruit_FXOS8700.h>
 
-#define BUFFER_SIZE 25
-#define TX_THROTTLE 50
-#define REJECTION_THRESHOLD 5
+#define BUFFER_SIZE 15
+#define TX_THROTTLE 60
+
+#define REJECTION_THRESHOLD 4
+#define REJECTION_COUNT_MAX 10
 
 int tx_count = 0;
+int rejection_count = 0;
 
 float final_value = 0;
 float accel_offset = 0;
@@ -38,19 +43,30 @@ void loop(void)
   accelmag.getEvent(&accel_event);
 
   float accel_value = (float)accel_event.acceleration.x - accel_offset;
+  accel_value = constrain(accel_value, -9.8, 9.8);
 
-  accel_value = map(accel_value, -9.8, 9.8, -45, 45);
+  //accel_value = map(accel_value, -9.8, 9.8, -45, 45) * 1.5;
 
-  float sum = 0;
-  for (int x = BUFFER_SIZE - 1; x > 0; x--)
+  accel_value = 90 - (acos(accel_value / 9.8) * (180 / M_PI));
+
+  float absDifference = 0;
+  if (final_value > accel_value) absDifference = final_value - accel_value;
+  else absDifference = accel_value - final_value;
+
+  if (absDifference < REJECTION_THRESHOLD || ++rejection_count > REJECTION_COUNT_MAX)
   {
-    averages[x] = averages[x - 1];
-    sum += averages[x];
-  }
-  averages[0] = accel_value;
-  sum += averages[0];
+    float sum = 0;
+    for (int x = BUFFER_SIZE - 1; x > 0; x--)
+    {
+      averages[x] = averages[x - 1];
+      sum += averages[x];
+    }
+    averages[0] = accel_value;
+    sum += averages[0];
 
-  final_value = constrain((sum / (float)BUFFER_SIZE), -45, 45);
+    final_value = constrain((sum / (float)BUFFER_SIZE), -45, 45);
+    rejection_count = 0;
+  }
 
   if (++tx_count == TX_THROTTLE)
   {
