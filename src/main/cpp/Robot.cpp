@@ -15,6 +15,9 @@ HangMech hangMech;
 ControlPanel controlPanel;
 DriverCameras driverCameras;
 
+extern frc::MecanumDrive mecanumDrive(WPI_TalonSRX leftFront_Leader,
+ WPI_TalonSRX leftRear_Leader, WPI_TalonSRX rightFront_Leader, WPI_TalonSRX rightRear_Leader);
+
 /******************** ROBOT INIT ********************/
 void Robot::RobotInit()
 {
@@ -59,7 +62,9 @@ void Robot::AutonomousPeriodic() {}
 /******************** TELEOP INIT ********************/
 //Initialization is carried out in Robot Init -Programming
 
-void Robot::TeleopInit() {}
+void Robot::TeleopInit() {
+    driveTrain.Stop();
+}
 
 /******************** TELEOP PERIODIC ********************/
 void Robot::TeleopPeriodic()

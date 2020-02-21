@@ -50,6 +50,21 @@ frc::MecanumDrive mecanumDrive{leftFront_Leader, leftRear_Leader, rightFront_Lea
 /* NAVX GYRO INSTANTIATION */
 AHRS navX_gyro{SPI::Port::kMXP};
 
+void DriveTrain::AutoInit()
+{
+    //Adds counter during AutoPeriodic to make robot drive forward for 3 seconds
+    m_autoCtr = 0; 
+    
+    m_autoCtr++;
+
+    if (m_autoCtr <= AUTO_MOVEMENT_DURATION) {
+        DriveTrain::mecanumDrive.DriveCartesian(AUTO_MOVE, 0.0, 0.0);
+    }
+    else {
+        DriveTrain::mecanumDrive.DriveCartesian(0.0,0.0,AUTO_TWIRL)
+    }
+}
+
 void DriveTrain::Init()
 {
     // Write Talon configuration if SET
@@ -195,4 +210,8 @@ void DriveTrain::writeTalonConfigs()
     rightRear_Leader.Config_kP(DRIVE_SLOT_IDX, DRIVE_PROPORTIONAL_CTRL);
     rightRear_Leader.Config_kD(DRIVE_SLOT_IDX, DRIVE_DERIVATIVE_CTRL);
     rightRear_Leader.Config_kF(DRIVE_SLOT_IDX, DRIVE_FEED_FWD_CTRL);
+
+void DriveTrain::Stop() {
+    mecanumDrive:DriveCartesian(0.0,0.0,0.0)
+}
 }

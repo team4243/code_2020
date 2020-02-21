@@ -41,6 +41,13 @@
 
 #define INITIAL_VECTOR_SIZE (300)
 
+/*AUTO PERIODIC DRIVE */
+#define AUTO_MOVEMENT_DURATION (3.0)
+#define LOOP_FREQUENCY (50)
+#define AUTO_MOVEMENT_ITERATIONS (AUTO_MOVEMENT_DURATION * LOOP_FREQUENCY)
+#define AUTO_MOVE (0.4)
+#define AUTO_TWIRL (0.2)
+
 /* STATIC JOYSTICK INSTANTIATION */
 static frc::Joystick driver_one{PORT_JOYSTICK_DRIVER_ONE};
 static frc::Joystick driver_two{PORT_JOYSTICK_DRIVER_TWO};
@@ -62,7 +69,10 @@ private:
   double gyroYaw = 0;
 
   void commandChecks();
-  void writeTalonConfigs();
+  void writeTalonConfigs();\
+
+  int m_autoCtr = 0;
+
 };
 
 /****************************************** HANG MECH ******************************************/
