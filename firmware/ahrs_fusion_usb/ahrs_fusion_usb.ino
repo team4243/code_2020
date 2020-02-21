@@ -14,7 +14,6 @@ int tx_count = 0;
 int rejection_count = 0;
 
 float final_value = 0;
-float accel_offset = 0;
 float averages[BUFFER_SIZE];
 
 Adafruit_FXOS8700 accelmag = Adafruit_FXOS8700(0x8700A, 0x8700B);
@@ -32,20 +31,11 @@ void setup()
 
 void loop(void)
 {
-  if (Serial.available())
-  {
-    accel_offset = accel_event.acceleration.x;
-
-    while (Serial.available()) Serial.read();
-    for (int x = 0; x < BUFFER_SIZE; x++) averages[x] = 0;
-  }
+  while (Serial.available()) Serial.read();
 
   accelmag.getEvent(&accel_event);
 
-  float accel_value = (float)accel_event.acceleration.x - accel_offset;
-  accel_value = constrain(accel_value, -9.8, 9.8);
-
-  //accel_value = map(accel_value, -9.8, 9.8, -45, 45) * 1.5;
+  float accel_value = constrain((float)accel_event.acceleration.x, -9.8, 9.8);
 
   accel_value = 90 - (acos(accel_value / 9.8) * (180 / M_PI));
 
@@ -74,6 +64,5 @@ void loop(void)
 
     Serial.print('#');
     Serial.println((int)(final_value));
-    Serial.println();
   }
 }
