@@ -13,16 +13,23 @@
 #define WRITE_TALON_CONFIGURATIONS (false)
 #define DRIVE_JOYSTICK_DEADBAND (0.10)
 
-/* MOTOR CONTROLLERS CAN DEVICE NUMBERS */
-#define CHANNEL_TALON_LF_LEADER (0)
-#define CHANNEL_TALON_LR_LEADER (0)
-#define CHANNEL_TALON_RF_LEADER (0)
-#define CHANNEL_TALON_RR_LEADER (0)
+/*AUTO PERIODIC DRIVE */
+#define AUTO_MOVEMENT_DURATION (3.0)
+#define LOOP_FREQUENCY (50)
+#define AUTO_MOVEMENT_ITERATIONS (AUTO_MOVEMENT_DURATION * LOOP_FREQUENCY)
+#define AUTO_MOVE (0.4)
+#define AUTO_TWIRL (0.2)
 
-#define CHANNEL_TALON_LF_FOLLOWER (0)
-#define CHANNEL_TALON_LR_FOLLOWER (0)
-#define CHANNEL_TALON_RF_FOLLOWER (0)
-#define CHANNEL_TALON_RR_FOLLOWER (0)
+/* MOTOR CONTROLLERS CAN DEVICE NUMBERS */
+#define CHANNEL_TALON_LF_LEADER (2)
+#define CHANNEL_TALON_LR_LEADER (58)
+#define CHANNEL_TALON_RF_LEADER (2)
+#define CHANNEL_TALON_RR_LEADER (58)
+
+#define CHANNEL_TALON_LF_FOLLOWER (2)
+#define CHANNEL_TALON_LR_FOLLOWER (58)
+#define CHANNEL_TALON_RF_FOLLOWER (2)
+#define CHANNEL_TALON_RR_FOLLOWER (58)
 
 /* TALON SRX CONFIGURATION */
 #define DRIVE_PEAK_OUTPUT_FWD (0.35)   // (0 --> 1)
@@ -50,18 +57,15 @@ frc::MecanumDrive mecanumDrive{leftFront_Leader, leftRear_Leader, rightFront_Lea
 /* NAVX GYRO INSTANTIATION */
 AHRS navX_gyro{SPI::Port::kMXP};
 
-void DriveTrain::AutoInit()
+void DriveTrain::AutoDrive()
 {
-    //Adds counter during AutoPeriodic to make robot drive forward for 3 seconds
-    m_autoCtr = 0; 
-    
-    m_autoCtr++;
-
-    if (m_autoCtr <= AUTO_MOVEMENT_DURATION) {
-        DriveTrain::mecanumDrive.DriveCartesian(AUTO_MOVE, 0.0, 0.0);
+    if (++m_autoCtr <= AUTO_MOVEMENT_ITERATIONS)
+    {
+        mecanumDrive.DriveCartesian(AUTO_MOVE, 0.0, 0.0);
     }
-    else {
-        DriveTrain::mecanumDrive.DriveCartesian(0.0,0.0,AUTO_TWIRL)
+    else
+    {
+        mecanumDrive.DriveCartesian(0.0, 0.0, AUTO_TWIRL);
     }
 }
 
@@ -120,6 +124,11 @@ void DriveTrain::Drive()
         mecanumDrive.DriveCartesian(joystick_Y, joystick_X, joystick_Z, gyroYaw);
     else
         mecanumDrive.DriveCartesian(joystick_Y, joystick_X, joystick_Z);
+}
+
+void DriveTrain::Stop()
+{
+    mecanumDrive.DriveCartesian(0.0, 0.0, 0.0);
 }
 
 void DriveTrain::commandChecks()
@@ -210,8 +219,4 @@ void DriveTrain::writeTalonConfigs()
     rightRear_Leader.Config_kP(DRIVE_SLOT_IDX, DRIVE_PROPORTIONAL_CTRL);
     rightRear_Leader.Config_kD(DRIVE_SLOT_IDX, DRIVE_DERIVATIVE_CTRL);
     rightRear_Leader.Config_kF(DRIVE_SLOT_IDX, DRIVE_FEED_FWD_CTRL);
-
-void DriveTrain::Stop() {
-    mecanumDrive:DriveCartesian(0.0,0.0,0.0)
-}
 }
