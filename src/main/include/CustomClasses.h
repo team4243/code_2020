@@ -59,7 +59,10 @@ class DriveTrain
 public:
   void Init();
   void Drive();
+
+  void AutoInit();
   void AutoDrive();
+  
   void Stop();
 
 private:

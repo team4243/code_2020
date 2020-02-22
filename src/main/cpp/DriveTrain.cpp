@@ -18,7 +18,7 @@
 #define LOOP_FREQUENCY (50)
 #define AUTO_MOVEMENT_ITERATIONS (AUTO_MOVEMENT_DURATION * LOOP_FREQUENCY)
 #define AUTO_MOVE (0.4)
-#define AUTO_TWIRL (0.2)
+#define AUTO_TWIRL (0.0)
 
 /* MOTOR CONTROLLERS CAN DEVICE NUMBERS */
 #define CHANNEL_TALON_LF_LEADER (2)
@@ -56,6 +56,8 @@ frc::MecanumDrive mecanumDrive{leftFront_Leader, leftRear_Leader, rightFront_Lea
 
 /* NAVX GYRO INSTANTIATION */
 AHRS navX_gyro{SPI::Port::kMXP};
+
+void DriveTrain::AutoInit() { m_autoCtr = 0; }
 
 void DriveTrain::AutoDrive()
 {

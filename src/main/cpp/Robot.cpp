@@ -52,7 +52,10 @@ void Robot::RobotPeriodic()
 void Robot::AutonomousInit()
 {
     if (ENABLE_DRIVE_TRAIN)
+    {
+        driveTrain.AutoInit();
         driveTrain.Stop();
+    }
 }
 
 /******************** AUTONOMOUS PERIODIC ********************/
