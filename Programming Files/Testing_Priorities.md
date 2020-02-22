@@ -1,15 +1,14 @@
 <h2>Testing Priorities:</h2>
 <p>For when we get the robot to test </p>
 
-<h3>Zero:</h3>
 <p>
+  <strong>Zero:</strong>
   &emsp;-Check Motor Controllers, CAN Bus Device Numbers, is firmware updated <br/>
   &emsp;-Can we communicate wirelessly <br/><br/>
 </p>
 
-
-<h3> One: </h3>
 <p>
+  <strong>One:</strong>
   &emsp;-cameras yes <br/>
   &emsp;-Check if robot drives/strafes/rotates correctly <br/>
   &emsp;-be able to make sure we can move a certain amount in autonomous <br/>
@@ -18,9 +17,8 @@
   &emsp;&emsp;-does Gyro zero if we are using it? <br/>
 </p>
 
-
-<h3> Two: </h3>
 <p>
+  <strong>Two:</strong>
   &emsp;-Do lead screws rotate in the right direction (corresponding to joystick direction) <br/>
    &emsp;&emsp; -Can they rotate in both directions? <br/>
   &emsp;-Do we get angle from gyro <br/>
@@ -30,9 +28,8 @@
   &emsp;<i>-Can auto-lift work </i><br/>
 </p>
 
-
-<h3> Three: </h3>
 <p>
+  <strong>Three:</strong>
   &emsp;-See if Control Panel motor spins <br/>
   &emsp;-Check if we can detect colour <br/>
     &emsp;&emsp;-Check color changes <br/>
