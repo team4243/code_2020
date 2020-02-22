@@ -63,7 +63,7 @@ void DriveTrain::AutoDrive()
 {
     if (++m_autoCtr <= AUTO_MOVEMENT_ITERATIONS)
     {
-        mecanumDrive.DriveCartesian(AUTO_MOVE, 0.0, 0.0);
+        mecanumDrive.DriveCartesian(0.0, AUTO_MOVE, 0.0);
     }
     else
     {
@@ -123,9 +123,9 @@ void DriveTrain::Drive()
 
     // Field mode uses the GYRO YAW as an input
     if (useFieldMode)
-        mecanumDrive.DriveCartesian(joystick_Y, joystick_X, joystick_Z, gyroYaw);
+        mecanumDrive.DriveCartesian(joystick_X, joystick_Y, joystick_Z, gyroYaw);
     else
-        mecanumDrive.DriveCartesian(joystick_Y, joystick_X, joystick_Z);
+        mecanumDrive.DriveCartesian(joystick_X, joystick_Y, joystick_Z);
 }
 
 void DriveTrain::Stop()
