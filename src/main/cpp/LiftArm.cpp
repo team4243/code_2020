@@ -40,7 +40,9 @@ void LiftArm::ManualHang(double joystickInput)
 void LiftArm::UpdatePosition(double positionChange)
 {
     // Get the limit switch readings
-    max_reached = Limit_High->Get();
+    max_reached = false; //Limit_High->Get();
+    frc::SmartDashboard::PutString("LIMIT HIGH WARN:", "FORCED TO FALSE");
+
     min_reached = Limit_Low->Get();
 
     // Reject new positions ABOVE MAX if reached

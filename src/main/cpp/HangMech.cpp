@@ -5,10 +5,6 @@
 
 #include "frc/DigitalInput.h"
 
-//#define RIGHT_ARM_EXISTS (true)
-/* It's a way to make only one change in one place to enable or disable code (look at 
-end of //AUTO)*/
-
 /* TUNING VARIABLES */
 #define WRITE_TALON_CONFIGURATIONS (false)
 #define AUTO_HANG_SPEED (0.01)
@@ -22,17 +18,19 @@ end of //AUTO)*/
 #define HEIGHT_PER_REVOLUTION (0.5 * 1)
 
 /* DIO CHANNEL NUMBERS (0 - 9)*/
-#define LEFT_HIGH_DIO_CHANNEL_NUM (0)
-#define LEFT_LOW_DIO_CHANNEL_NUM (1)
-#define RIGHT_HIGH_DIO_CHANNEL_NUM (2)
-#define RIGHT_LOW_DIO_CHANNEL_NUM (3)
+#define LEFT_HIGH_DIO_CHANNEL_NUM (3) //not installed
+#define LEFT_LOW_DIO_CHANNEL_NUM (0)
+#define RIGHT_HIGH_DIO_CHANNEL_NUM (2) // not installed
+#define RIGHT_LOW_DIO_CHANNEL_NUM (1)
 
 /* MOTOR DEFINITIONS*/
-#define LEFT_PAYLOAD_LIFT_LEADER_DEVICENUMBER (2)
-#define LEFT_PAYLOAD_LIFT_FOLLOWER_DEVICENUMBER (58)
+#define LIFT_LEFT_LEADER (16)
+#define LIFT_LEFT_FOLLOWER (25)
 
-#define RIGHT_PAYLOAD_LIFT_LEADER_DEVICENUMBER (0)
-#define RIGHT_PAYLOAD_LIFT_FOLLOWER_DEVICENUMBER (0)
+// TO TEST JUST ONE: SET DEVICE ID'S SAME
+
+#define LIFT_RIGHT_LEADER (62)
+#define LIFT_RIGHT_FOLLOWER (60)
 
 /* TALON CONFIGURATION */
 #define HANG_PEAK_OUTPUT_FWD (0.5)
@@ -49,11 +47,15 @@ LiftArm RightArm;
 
 void HangMech::Init()
 {
-    LeftArm.Lift_Leader = new WPI_TalonSRX(LEFT_PAYLOAD_LIFT_LEADER_DEVICENUMBER);
-    LeftArm.Lift_Follower = new WPI_TalonSRX(LEFT_PAYLOAD_LIFT_FOLLOWER_DEVICENUMBER);
+    LeftArm.Lift_Leader = new WPI_TalonSRX(LIFT_LEFT_LEADER);
+    LeftArm.Lift_Follower = new WPI_TalonSRX(LIFT_LEFT_FOLLOWER);
+    RightArm.Lift_Leader = new WPI_TalonSRX(LIFT_RIGHT_LEADER);
+    RightArm.Lift_Follower = new WPI_TalonSRX(LIFT_RIGHT_FOLLOWER);
 
     LeftArm.Limit_High = new frc::DigitalInput(LEFT_HIGH_DIO_CHANNEL_NUM);
     LeftArm.Limit_Low = new frc::DigitalInput(LEFT_LOW_DIO_CHANNEL_NUM);
+    RightArm.Limit_High = new frc::DigitalInput(RIGHT_HIGH_DIO_CHANNEL_NUM);
+    RightArm.Limit_Low = new frc::DigitalInput(RIGHT_LOW_DIO_CHANNEL_NUM);
 
     if (WRITE_TALON_CONFIGURATIONS)
         writeTalonConfigs();
@@ -68,10 +70,10 @@ void HangMech::Hang()
 
     // Update sensor readings
     LeftArm.UpdateEncoder();
-    //RightArm.UpdateEncoder();
+    RightArm.UpdateEncoder();
 
     LeftArm.UpdateMotorCurrent();
-    //RightArm.UpdateMotorCurrent();
+    RightArm.UpdateMotorCurrent();
 
     // AUTO
     if (useAutoHang)
@@ -89,37 +91,34 @@ void HangMech::Hang()
         changed_position /= degree_per_revolution; // revolutions per loop
 
         LeftArm.UpdatePosition(-changed_position);
-        //RightArm.UpdatePosition(changed_position);
-        // #ifdef RIGHT_ARM_EXISTS
-        //         RightArm.UpdatePosition(changed_position);
-        // #endif
+        RightArm.UpdatePosition(changed_position);
     }
 
     // MANUAL
     else
     {
         LeftArm.ManualHang(-driver_two.GetRawAxis(MANUAL_HANG_LEFT_AXIS));
-        //RightArm.ManualHang(-driver_two.GetRawAxis(MANUAL_HANG_RIGHT_AXIS));
+        RightArm.ManualHang(-driver_two.GetRawAxis(MANUAL_HANG_RIGHT_AXIS));
     }
 
     // Print positions
     frc::SmartDashboard::PutNumber("LEFT Position:", LeftArm.current_position);
-    //frc::SmartDashboard::PutNumber("RIGHT Position:", RightArm.current_position);
+    frc::SmartDashboard::PutNumber("RIGHT Position:", RightArm.current_position);
 
     // Print limit switch triggers
     frc::SmartDashboard::PutString("LEFT Limit High:", (LeftArm.max_reached ? "TRIGGERED" : ""));
     frc::SmartDashboard::PutString("LEFT Limit Low:", (LeftArm.min_reached ? "TRIGGERED" : ""));
 
-    //frc::SmartDashboard::PutString("RIGHT Limit High:", (RightArm.max_reached ? "TRIGGERED" : ""));
-    //frc::SmartDashboard::PutString("RIGHT Limit Low:", (RightArm.min_reached ? "TRIGGERED" : ""));
+    frc::SmartDashboard::PutString("RIGHT Limit High:", (RightArm.max_reached ? "TRIGGERED" : ""));
+    frc::SmartDashboard::PutString("RIGHT Limit Low:", (RightArm.min_reached ? "TRIGGERED" : ""));
 
     // Print encoder values
     frc::SmartDashboard::PutNumber("LEFT Encoder:", LeftArm.encoder_value);
-    //frc::SmartDashboard::PutNumber("RIGHT Encoder:", RightArm.encoder_value);
+    frc::SmartDashboard::PutNumber("RIGHT Encoder:", RightArm.encoder_value);
 
     // Print stator current, min & max currents
     frc::SmartDashboard::PutNumber("LEFT Current:", LeftArm.motor_current);
-    //frc::SmartDashboard::PutNumber("RIGHT Current:", RightArm.motor_current);
+    frc::SmartDashboard::PutNumber("RIGHT Current:", RightArm.motor_current);
 }
 
 void HangMech::commandChecks()
@@ -177,12 +176,12 @@ void HangMech::writeTalonConfigs()
     LeftArm.Lift_Leader->Config_kD(HANG_SLOT_IDX, HANG_DERIVATIVE_CTRL);
     LeftArm.Lift_Leader->Config_kF(HANG_SLOT_IDX, HANG_FEED_FWD_CTRL);
 
-    // RightArm.Lift_Leader->ConfigPeakOutputForward(HANG_PEAK_OUTPUT_FWD);
-    // RightArm.Lift_Leader->ConfigPeakOutputReverse(HANG_PEAK_OUTPUT_REV);
-    // RightArm.Lift_Leader->ConfigClosedloopRamp(HANG_RAMP_TIME);
-    // RightArm.Lift_Leader->Config_kP(HANG_SLOT_IDX, HANG_PROPORTIONAL_CTRL);
-    // RightArm.Lift_Leader->Config_kD(HANG_SLOT_IDX, HANG_DERIVATIVE_CTRL);
-    // RightArm.Lift_Leader->Config_kF(HANG_SLOT_IDX, HANG_FEED_FWD_CTRL);
+    RightArm.Lift_Leader->ConfigPeakOutputForward(HANG_PEAK_OUTPUT_FWD);
+    RightArm.Lift_Leader->ConfigPeakOutputReverse(HANG_PEAK_OUTPUT_REV);
+    RightArm.Lift_Leader->ConfigClosedloopRamp(HANG_RAMP_TIME);
+    RightArm.Lift_Leader->Config_kP(HANG_SLOT_IDX, HANG_PROPORTIONAL_CTRL);
+    RightArm.Lift_Leader->Config_kD(HANG_SLOT_IDX, HANG_DERIVATIVE_CTRL);
+    RightArm.Lift_Leader->Config_kF(HANG_SLOT_IDX, HANG_FEED_FWD_CTRL);
 }
 
 // not using this one this year, useful for reference/learning in the future
