@@ -13,7 +13,7 @@
   &emsp;-Check if robot drives/strafes/rotates correctly <br/>
   &emsp;-be able to make sure we can move a certain amount in autonomous <br/>
   &emsp;-Can we toggle between high-low gear? <br/>
-  &emsp;<i> -Check if field orientation works correctly IFF gyro works AND we are using it </i><br/>
+  &emsp;<i>-Check if field orientation works correctly IFF gyro works AND we are using it </i><br/>
   &emsp;&emsp;-does Gyro zero if we are using it? <br/><br/>
 </p>
 
