@@ -3,14 +3,14 @@
 For when we get the robot to test 
 </p>
 
-<h2>Zero:</h2>
+<h3>Zero:</h3>
 <p>
   -Check Motor Controllers, CAN Bus Device Numbers, is firmware updated <br/>
   -Can we communicate wirelessly <br/><br/>
  </p>
 
 
-<h2> One: </h2>
+<h3> One: </h3>
 <p>
   -cameras yes <br/>
   -Check if robot drives/strafes/rotates correctly <br/>
@@ -21,7 +21,7 @@ For when we get the robot to test
  </p>
 
 
-<h2> Two: </h2>
+<h3> Two: </h3>
 <p>
   -Do lead screws rotate in the right direction (corresponding to joystick direction) <br/>
     -Can they rotate in both directions? <br/>
@@ -33,7 +33,7 @@ For when we get the robot to test
  </p>
 
 
-<h2> Three: </h2>
+<h3> Three: </h3>
 <p>
   -See if Control Panel motor spins <br/>
   -Check if we can detect colour <br/>
