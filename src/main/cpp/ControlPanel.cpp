@@ -12,7 +12,8 @@
 #define CONTROLPANEL_TRIGGER_DEADBAND (0.15)
 
 /* TALON SRX CAN DEVICE(S)*/
-#define CONTROL_PANEL_DEVICE_NUMBER (2) 
+#define CONTROL_PANEL_DEVICE_NUMBER (2) //do we have a follower?
+#define FOLLOW_CTRL_PANEL_DEVICE_NUMBER (58)
 
 /* TALON CONFIGURATION */
 #define CONTROLPANEL_PEAK_OUTPUT_FWD (0.5)
@@ -23,7 +24,8 @@
 #define CONTROLPANEL_RAMP_TIME (0)
 #define CONTROLPANEL_SLOT_IDX (0)
 
-WPI_TalonSRX ControlPanel_Motor{CONTROL_PANEL_DEVICE_NUMBER}; 
+WPI_TalonSRX ControlPanel_Motor{CONTROL_PANEL_DEVICE_NUMBER};
+WPI_TalonSRX FollowControlPanel_Motor{FOLLOW_CTRL_PANEL_DEVICE_NUMBER};
 
 ColorSensorInterface colorSensorInterface;
 
@@ -38,19 +40,8 @@ void ControlPanel::Init()
     
     No automation implemented yet, but it may well be using these capabilities.
     
-    ㅃ떠ㅏㅁ은ㅇ층ㅁ ㄴㅇ땨마아 아남노야ㅐ더ㅓㅏㅗㄴㅇ ㅠ챠ㅕ논따ㅓ뮨
-
     Need a way to count whole revolutions of the control panel in order to automate for
     ROTATION control.*/
- 
-    if (driver_two.GetRawButton(B_BUTTON))
-    {
-        ControlPanel_Motor.Set(0.1);
-        // bool cpButtonPressed = ControlPanel_Motor.HasAnyFault();
-        frc::SmartDashboard::PutNumber("Motor", 0.1);
-        // frc::SmartDashboard::PutBoolean("Button Pressed", cpButtonPressed);
-        std::cout << "MOTOR....MOVE PLEASE" << std::endl;
-    }
 
     isTurningThrice = false;
     isTurningToColour = false;
@@ -64,18 +55,30 @@ void ControlPanel::Turn()
 {
     commandChecks();
 
+    countTurns();
+
     if (isManual)
+    {
         manualTurn();
-    // else
-    // if ()
-    //     turnThreeTimes();
-    // if ()
-    //     turnToColour();
+        current_mode = "manual";
+    }
+    else if (isTurningThrice)
+    {
+        turnThreeTimes();
+        current_mode = "turn3";
+    }
+    if (isTurningToColour)
+    {
+        turnToColour();
+        current_mode = "toColour";
+    }
+
+    frc::SmartDashboard::PutString("Mode:", current_mode);
 }
 
 void ControlPanel::manualTurn()
 {
-    double triggerValue = driver_two.GetRawAxis(RIGHT_TRIGGER);
+    double triggerValue = driver_two.GetRawAxis(CONTROL_PANEL_TURN_AXIS);
     triggerValue = Utils::DeadBand(triggerValue, CONTROLPANEL_TRIGGER_DEADBAND);
 
     ControlPanel_Motor.Set(ControlMode::PercentOutput, CONTROL_PANEL_SCALAR * triggerValue);
@@ -83,15 +86,23 @@ void ControlPanel::manualTurn()
 
 void ControlPanel::turnThreeTimes()
 {
+    if (num_colour_changed < 32)
+        ControlPanel_Motor.Set(ControlMode::PercentOutput, 20);
+    else
+        ControlPanel_Motor.Set(ControlMode::PercentOutput, 0);
 }
 
 void ControlPanel::turnToColour()
 {
-    if (driver_two.GetRawButton(X_BUTTON))
-    {
-        std::string foundcolor = colorSensorInterface.GetColorFromSensor(0.70);
-        frc::SmartDashboard::PutString("Color Sense", foundcolor);
-    }
+    // if (driver_two.GetRawButton(X_BUTTON))
+    // {
+    //     std::string foundcolor = colorSensorInterface.GetColorFromSensor(0.70);
+    //     frc::SmartDashboard::PutString("Color Sense", foundcolor);
+    // }
+    if (colorSensorInterface.ColorMatchesColorFromFMS())
+        ControlPanel_Motor.Set(ControlMode::PercentOutput, 0);
+    else
+        ControlPanel_Motor.Set(ControlMode::PercentOutput, 20);
 }
 
 void ControlPanel::stopMotor()
@@ -99,10 +110,60 @@ void ControlPanel::stopMotor()
     ControlPanel_Motor.Set(ControlMode::PercentOutput, 0);
 }
 
+void ControlPanel::countTurns()
+{
+    // try this but if it doesn't work oh well
+    if (!(colorSensorInterface.GetColorFromSensor(0.80).compare(previous_colour)))
+    {
+        confidence_count++;
+        if (confidence_count == 3)
+        {
+            confidence_count = 0;
+            previous_colour = colorSensorInterface.GetColorFromSensor(0.80);
+            num_colour_changed++;
+        }
+    }
+}
+
 void ControlPanel::commandChecks()
 {
-    if (driver_two.GetRawButton(STOP_BUTTON_1))
+    if (driver_two.GetRawButton(STOP_BUTTON_1) && driver_two.GetRawButton(STOP_BUTTON_2))
         stopMotor();
+
+    if (driver_two.GetRawButtonReleased(TOGGLE_SPIN_THRICE))
+        isTurningThrice = !isTurningThrice;
+
+    if (driver_two.GetRawButtonReleased(TOGGLE_SPIN_TO_COLOUR))
+        isTurningToColour = !isTurningToColour;
+
+    if (driver_two.GetRawButton(TOGGLE_AUTO_MODE_BUTTON) && driver_two.GetRawButton(TOGGLE_CONTROL_PANEL_AUTO))
+    {
+        //command button debouncing
+        if (!pressedLastFrame_isManual)
+        {
+            pressedLastFrame_isManual = true;
+
+            isManual = !isManual;
+        }
+        else
+            pressedLastFrame_isManual = false;
+    }
+
+    if (isManual)
+    {
+        isTurningThrice = false;
+        isTurningToColour = false;
+    }
+    if (isTurningThrice)
+    {
+        isManual = false;
+        isTurningToColour = false;
+    }
+    if (isTurningToColour)
+    {
+        isManual = false;
+        isTurningThrice = false;
+    }
 }
 
 void ControlPanel::writeTalonConfigs()

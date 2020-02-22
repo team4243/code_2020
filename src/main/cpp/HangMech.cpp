@@ -90,9 +90,9 @@ void HangMech::Hang()
 
         LeftArm.UpdatePosition(-changed_position);
         //RightArm.UpdatePosition(changed_position);
-// #ifdef RIGHT_ARM_EXISTS        
-//         RightArm.UpdatePosition(changed_position);
-// #endif         
+        // #ifdef RIGHT_ARM_EXISTS
+        //         RightArm.UpdatePosition(changed_position);
+        // #endif
     }
 
     // MANUAL
@@ -124,8 +124,8 @@ void HangMech::Hang()
 
 void HangMech::commandChecks()
 {
-    bool autoPressed_1 = driver_two.GetRawButton(TOGGLE_AUTO_MODE_BUTTON_1);
-    bool autoPressed_2 = driver_two.GetRawButton(TOGGLE_AUTO_MODE_BUTTON_2);
+    bool autoPressed_1 = driver_two.GetRawButton(TOGGLE_AUTO_MODE_BUTTON);
+    bool autoPressed_2 = driver_two.GetRawButton(TOGGLE_HANG_MECH_AUTO);
 
     // Check for HANG MODE toggle and update dashboard
     if (autoPressed_1 && autoPressed_2)
@@ -157,7 +157,7 @@ void HangMech::CurrentSpiked()
     //     right_temp_values += Right_Payload_Lift_Leader.GetStatorCurrents();
     //     left_temp_values += Left_Payload_Lift_Leader.GetStatorCurrent();
     //     if (i == 4) {
-            
+
     //     }
     // }
 
@@ -186,7 +186,7 @@ void HangMech::writeTalonConfigs()
 }
 
 // not using this one this year, useful for reference/learning in the future
-// void HangMech::Hang_PercentOutput() 
+// void HangMech::Hang_PercentOutput()
 // {
 //     // PID Tuning
 //     if (USE_JOYSTICK)
