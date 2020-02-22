@@ -1,32 +1,31 @@
-# Testing Priorities:
+# Testing Priorities:<br/><br/>
 
 **__Zero:__**
--Check __Motor Controllers__, CAN Bus Device Numbers, is firmware updated
--Can we communicate wirelessly
+-Check __Motor Controllers__, CAN Bus Device Numbers, is firmware updated <br/>
+-Can we communicate wirelessly <br/><br/>
+
+**__One:__** <br/>
+-*cameras yes* <br/>
+-Check if robot __drives/strafes/rotates__ correctly <br/>
+-be able to make sure we can move a certain amount in autonomous <br/>
+-Can we toggle between __high-low gear?__ <br/>
+-*Check if field orientation works correctly IFF gyro works AND we are using it* <br/>
+-does Gyro __zero__ if we are using it? <br/><br/>
 
 
-**__One:__**
--*cameras yes*
--Check if robot __drives/strafes/rotates__ correctly
--be able to make sure we can move a certain amount in autonomous
--Can we toggle between __high-low gear?__
--*Check if field orientation works correctly IFF gyro works AND we are using it*
--does Gyro __zero__ if we are using it?
+**__Two:__** <br/>
+-Do __lead screws__ rotate in the right direction (corresponding to joystick direction) <br/>
+  -Can they rotate in both directions? <br/>
+-Do we get angle from gyro <br/>
+-Do we get __encoders values__ from both arms <br/>
+-Check spike in current? <br/>
+-*auto-stop if current spike* <br/>
+-Can auto-lift work <br/><br/>
 
 
-**__Two:__**
--Do __lead screws__ rotate in the right direction (corresponding to joystick direction)
-  -Can they rotate in both directions?
--Do we get angle from gyro
--Do we get __encoders values__ from both arms
--Check spike in current?
--*auto-stop if current spike*
--Can auto-lift work
-
-
-**__Three:__**
--See if __Control Panel__ motor spins
--Check if we can detect colour
-  -Check color changes
-  -Check num of rotations
--Check if we can automatically turn 3 times/to a colour
+**__Three:__** <br/>
+-See if __Control Panel__ motor spins <br/>
+-Check if we can detect colour <br/>
+  -Check color changes <br/>
+  -Check num of rotations <br/>
+-Check if we can automatically turn 3 times/to a colour <br/>
