@@ -1,6 +1,6 @@
 # Testing Priorities:<br/><br/>
 
-**__Zero:__**
+**__Zero:__** <br/>
 -Check __Motor Controllers__, CAN Bus Device Numbers, is firmware updated <br/>
 -Can we communicate wirelessly <br/><br/>
 
