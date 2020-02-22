@@ -5,8 +5,8 @@
 
 /* SYSTEM ENABLING */
 #define ENABLE_DRIVE_TRAIN (false)
-#define ENABLE_HANG_MECH (true)
-#define ENABLE_CONTROL_PANEL (false)
+#define ENABLE_HANG_MECH (false)
+#define ENABLE_CONTROL_PANEL (true)
 #define ENABLE_DRIVER_CAMERAS (false)
 
 /* CUSTOM CLASS INSTANTIATION */
