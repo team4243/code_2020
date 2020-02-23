@@ -18,6 +18,8 @@ DriverCameras driverCameras;
 /******************** ROBOT INIT ********************/
 void Robot::RobotInit()
 {
+    TeensyGyro::Reset();
+
     if (ENABLE_DRIVER_CAMERAS)
         driverCameras.Init();
 }

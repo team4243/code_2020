@@ -7,7 +7,7 @@
 
 /* TUNING VARIABLES */
 #define HANG_JOYSTICK_DEADBAND (0.15)
-#define MANUAL_HANG_SPEED (0.25)
+#define MANUAL_HANG_SPEED (1)
 
 #define COUNTS_PER_REVOLUTION (4096)
 #define MAX_ENCODER_VALUE (123456789)
@@ -20,9 +20,7 @@ void LiftArm::Init()
     // Configure encoders
     Lift_Leader->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, 0);
     Lift_Leader->SetSensorPhase(false);
-
     Lift_Leader->SetSelectedSensorPosition(0, 0, 10);
-    Lift_Leader->Set(ControlMode::Position, 0);
 
     // Set follower motor controller
     Lift_Follower->Follow(*Lift_Leader);

@@ -8,7 +8,7 @@
 /* TUNING VARIABLES */
 #define USE_POSITION_CONTROL (false)
 #define WRITE_TALON_CONFIGURATIONS (true)
-#define AUTO_HANG_SPEED (0.01)
+#define AUTO_HANG_SPEED (0)
 
 /* AUTO HANG VARIABLES */
 #define LOOPS_PER_SECOND (50)
@@ -43,10 +43,10 @@
 #define HANG_SLOT_IDX (0)
 
 /* PERCENT OUTPUT PID CONTROL TUNE */
-#define PROPORTIONAL_CONTROL (0)
-#define DERIVATIVE_CONTROL (0)
+#define PROPORTIONAL_CONTROL (0.01)
+#define DERIVATIVE_CONTROL (0.001)
 #define FEED_FORWARD_CONTROL (0)
-#define SPEED_SCALAR (0.1)
+#define SPEED_SCALAR (0.5)
 
 /* LIFT ARM OBJECTS */
 LiftArm LeftArm;
@@ -72,8 +72,6 @@ void HangMech::Init()
 
     if (WRITE_TALON_CONFIGURATIONS)
         writeTalonConfigs();
-
-    TeensyGyro::Reset();
 }
 
 void HangMech::Hang()
@@ -162,6 +160,9 @@ void HangMech::hangPercentOutput()
     errorLast = errorCurrent;
     speedCurrent = speedNew;
 
+    // Print gyro angle
+    frc::SmartDashboard::PutNumber("Hang Gyro:", angle);
+
     // Print custom PID values
     frc::SmartDashboard::PutNumber("Current Speed:", speedCurrent);
 }
@@ -190,11 +191,11 @@ void HangMech::commandChecks()
 void HangMech::allPrints()
 {
     // Print limit switch triggers
-    frc::SmartDashboard::PutString("LEFT Limit High:", (LeftArm.max_reached ? "TRIGGERED" : ""));
-    frc::SmartDashboard::PutString("LEFT Limit Low:", (LeftArm.min_reached ? "TRIGGERED" : ""));
+    frc::SmartDashboard::PutString("LEFT Limit High:", (LeftArm.max_reached ? "TRIGGERED" : "--"));
+    frc::SmartDashboard::PutString("LEFT Limit Low:", (LeftArm.min_reached ? "TRIGGERED" : "--"));
 
-    frc::SmartDashboard::PutString("RIGHT Limit High:", (RightArm.max_reached ? "TRIGGERED" : ""));
-    frc::SmartDashboard::PutString("RIGHT Limit Low:", (RightArm.min_reached ? "TRIGGERED" : ""));
+    frc::SmartDashboard::PutString("RIGHT Limit High:", (RightArm.max_reached ? "TRIGGERED" : "--"));
+    frc::SmartDashboard::PutString("RIGHT Limit Low:", (RightArm.min_reached ? "TRIGGERED" : "--"));
 
     // Print encoder values
     frc::SmartDashboard::PutNumber("LEFT Encoder:", LeftArm.encoder_value);
@@ -208,10 +209,7 @@ void HangMech::allPrints()
     frc::SmartDashboard::PutNumber("RIGHT MAX Current:", RightArm.max_motor_current);
 
     // Print the mode
-    if (useAutoHang)
-        frc::SmartDashboard::PutString("Hang Mode:", "AUTO");
-    else
-        frc::SmartDashboard::PutString("Hang Mode:", "MANUAL");
+    frc::SmartDashboard::PutString("Hang Mode:", (useAutoHang ? "AUTO" : "MANUAL"));
 }
 
 void HangMech::writeTalonConfigs()
