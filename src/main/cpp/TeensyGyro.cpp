@@ -14,8 +14,6 @@ void TeensyGyro::Reset()
     try
     {
         TeensyPort = new frc::SerialPort(115200, frc::SerialPort::kUSB1);
-        TeensyPort->Write("!"); // Send prompt to sensor to ZERO
-
         frc::SmartDashboard::PutString("Hang Gyro Status:", "Connected");
     }
     catch (const std::exception &e)

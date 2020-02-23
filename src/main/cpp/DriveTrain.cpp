@@ -85,6 +85,8 @@ void DriveTrain::Init()
     leftRear_Follower.Follow(leftRear_Leader);
     rightFront_Follower.Follow(rightFront_Leader);
     rightRear_Follower.Follow(rightRear_Leader);
+
+    allPrints();
 }
 
 void DriveTrain::Drive()
@@ -145,12 +147,7 @@ void DriveTrain::commandChecks()
 
             // Toggle the mode
             useFieldMode = !useFieldMode;
-
-            // Print the mode
-            if (useFieldMode)
-                frc::SmartDashboard::PutString("Drive Mode:", "FIELD MODE");
-            else
-                frc::SmartDashboard::PutString("Drive Mode:", "BODY MODE");
+            allPrints();
         }
     }
     else
@@ -166,12 +163,7 @@ void DriveTrain::commandChecks()
 
             // Toggle the mode
             useSlowSpeed = !useSlowSpeed;
-
-            // Print the mode
-            if (useSlowSpeed)
-                frc::SmartDashboard::PutString("Drive Speed:", "SLOW");
-            else
-                frc::SmartDashboard::PutString("Drive Speed:", "FAST");
+            allPrints();
         }
     }
     else
@@ -190,6 +182,21 @@ void DriveTrain::commandChecks()
         // Print gyro measurement
         frc::SmartDashboard::PutNumber("The Robot Yawn:", gyroYaw);
     }
+}
+
+void DriveTrain::allPrints()
+{
+    // Print the DRIVE mode
+    if (useFieldMode)
+        frc::SmartDashboard::PutString("Drive Mode:", "FIELD MODE");
+    else
+        frc::SmartDashboard::PutString("Drive Mode:", "BODY MODE");
+
+    // Print the SPEED mode
+    if (useSlowSpeed)
+        frc::SmartDashboard::PutString("Drive Speed:", "SLOW");
+    else
+        frc::SmartDashboard::PutString("Drive Speed:", "FAST");
 }
 
 void DriveTrain::writeTalonConfigs()

@@ -6,7 +6,8 @@
 #include "frc/DigitalInput.h"
 
 /* TUNING VARIABLES */
-#define WRITE_TALON_CONFIGURATIONS (false)
+#define USE_POSITION_CONTROL (false)
+#define WRITE_TALON_CONFIGURATIONS (true)
 #define AUTO_HANG_SPEED (0.01)
 
 /* AUTO HANG VARIABLES */
@@ -33,13 +34,19 @@
 #define LIFT_RIGHT_FOLLOWER (60)
 
 /* TALON CONFIGURATION */
-#define HANG_PEAK_OUTPUT_FWD (0.1)
-#define HANG_PEAK_OUTPUT_REV (-0.1)
+#define HANG_PEAK_OUTPUT_FWD (0.5)
+#define HANG_PEAK_OUTPUT_REV (-0.5)
 #define HANG_PROPORTIONAL_CTRL (0.25)
 #define HANG_DERIVATIVE_CTRL (10)
 #define HANG_FEED_FWD_CTRL (0.0)
 #define HANG_RAMP_TIME (0)
 #define HANG_SLOT_IDX (0)
+
+/* PERCENT OUTPUT PID CONTROL TUNE */
+#define PROPORTIONAL_CONTROL (0)
+#define DERIVATIVE_CONTROL (0)
+#define FEED_FORWARD_CONTROL (0)
+#define SPEED_SCALAR (0.1)
 
 /* LIFT ARM OBJECTS */
 LiftArm LeftArm;
@@ -47,6 +54,15 @@ LiftArm RightArm;
 
 void HangMech::Init()
 {
+    useAutoHang = false;
+    pressedLastFrame_autoHang = false;
+
+    LeftArm.motor_current = 0;
+    LeftArm.max_motor_current = 0;
+
+    RightArm.motor_current = 0;
+    RightArm.max_motor_current = 0;
+
     LeftArm.Lift_Leader = new WPI_TalonSRX(LIFT_LEFT_LEADER);
     LeftArm.Lift_Follower = new WPI_TalonSRX(LIFT_LEFT_FOLLOWER);
     RightArm.Lift_Leader = new WPI_TalonSRX(LIFT_RIGHT_LEADER);
@@ -75,50 +91,82 @@ void HangMech::Hang()
     LeftArm.UpdateMotorCurrent();
     RightArm.UpdateMotorCurrent();
 
-    // AUTO
-    if (useAutoHang)
+    if (useAutoHang) // AUTO
     {
-        // Get gyro angle
-        double angle = TeensyGyro::GetAngleMeasurement(); // degrees
-
-        // Computation stuff, ya know... math
-        double speed = AUTO_HANG_SPEED * angle; // degrees per second
-
-        double changed_position = (speed / LOOPS_PER_SECOND); // degrees per loop
-
-        double degree_per_revolution = HEIGHT_PER_REVOLUTION / HEIGHT_PER_DEGREE;
-
-        changed_position /= degree_per_revolution; // revolutions per loop
-
-        LeftArm.UpdatePosition(-changed_position);
-        RightArm.UpdatePosition(changed_position);
+        if (USE_POSITION_CONTROL)
+            hangPosition();
+        else
+            hangPercentOutput();
+    }
+    else // MANUAL
+    {
+        if (USE_POSITION_CONTROL)
+        {
+            LeftArm.ManualHangPosition(driver_two.GetRawAxis(MANUAL_HANG_LEFT_AXIS));
+            RightArm.ManualHangPosition(driver_two.GetRawAxis(MANUAL_HANG_RIGHT_AXIS));
+        }
+        else
+        {
+            LeftArm.ManualHangPercentOutput(driver_two.GetRawAxis(MANUAL_HANG_LEFT_AXIS));
+            RightArm.ManualHangPercentOutput(driver_two.GetRawAxis(MANUAL_HANG_RIGHT_AXIS));
+        }
     }
 
-    // MANUAL
-    else
-    {
-        LeftArm.ManualHang(-driver_two.GetRawAxis(MANUAL_HANG_LEFT_AXIS));
-        RightArm.ManualHang(-driver_two.GetRawAxis(MANUAL_HANG_RIGHT_AXIS));
-    }
+    allPrints();
+}
+
+void HangMech::hangPosition()
+{
+    // Get gyro angle
+    double angle = TeensyGyro::GetAngleMeasurement(); // degrees
+
+    // Computation stuff, ya know... math
+    double speed = AUTO_HANG_SPEED * angle; // degrees per second
+
+    double changed_position = (speed / LOOPS_PER_SECOND); // degrees per loop
+
+    double degree_per_revolution = HEIGHT_PER_REVOLUTION / HEIGHT_PER_DEGREE;
+
+    changed_position /= degree_per_revolution; // revolutions per loop
+
+    LeftArm.UpdatePosition(changed_position);
+    RightArm.UpdatePosition(-changed_position);
 
     // Print positions
     frc::SmartDashboard::PutNumber("LEFT Position:", LeftArm.current_position);
     frc::SmartDashboard::PutNumber("RIGHT Position:", RightArm.current_position);
+}
 
-    // Print limit switch triggers
-    frc::SmartDashboard::PutString("LEFT Limit High:", (LeftArm.max_reached ? "TRIGGERED" : ""));
-    frc::SmartDashboard::PutString("LEFT Limit Low:", (LeftArm.min_reached ? "TRIGGERED" : ""));
+void HangMech::hangPercentOutput()
+{
+    // Get the sensor measurement
+    double angle = TeensyGyro::GetAngleMeasurement();
 
-    frc::SmartDashboard::PutString("RIGHT Limit High:", (RightArm.max_reached ? "TRIGGERED" : ""));
-    frc::SmartDashboard::PutString("RIGHT Limit Low:", (RightArm.min_reached ? "TRIGGERED" : ""));
+    // Determine the error
+    double errorCurrent = angle;
 
-    // Print encoder values
-    frc::SmartDashboard::PutNumber("LEFT Encoder:", LeftArm.encoder_value);
-    frc::SmartDashboard::PutNumber("RIGHT Encoder:", RightArm.encoder_value);
+    // Determine change in error
+    double errorChange = errorLast - errorCurrent;
 
-    // Print stator current, min & max currents
-    frc::SmartDashboard::PutNumber("LEFT Current:", LeftArm.motor_current);
-    frc::SmartDashboard::PutNumber("RIGHT Current:", RightArm.motor_current);
+    // Compute correction
+    double speedChange = PROPORTIONAL_CONTROL * errorCurrent + DERIVATIVE_CONTROL * errorChange;
+
+    // Determine new set speed
+    double speedNew = speedCurrent + speedChange;
+
+    // Contrain
+    speedNew = Utils::Constrain(speedNew, -1, 1);
+
+    speedNew *= SPEED_SCALAR;
+
+    LeftArm.UpdateSpeed(speedNew);
+    RightArm.UpdateSpeed(-speedNew);
+
+    errorLast = errorCurrent;
+    speedCurrent = speedNew;
+
+    // Print custom PID values
+    frc::SmartDashboard::PutNumber("Current Speed:", speedCurrent);
 }
 
 void HangMech::commandChecks()
@@ -136,35 +184,37 @@ void HangMech::commandChecks()
 
             // Toggle the mode
             useAutoHang = !useAutoHang;
-
-            // Print the mode
-            if (useAutoHang)
-                frc::SmartDashboard::PutString("Hang Mode:", "AUTO");
-            else
-                frc::SmartDashboard::PutString("Hang Mode:", "MANUAL");
         }
     }
     else
         pressedLastFrame_autoHang = false;
+
+    // Print the mode
+    if (useAutoHang)
+        frc::SmartDashboard::PutString("Hang Mode:", "AUTO");
+    else
+        frc::SmartDashboard::PutString("Hang Mode:", "MANUAL");
 }
 
-void HangMech::CurrentSpiked()
+void HangMech::allPrints()
 {
-    // a work in progress :(
+    // Print limit switch triggers
+    frc::SmartDashboard::PutString("LEFT Limit High:", (LeftArm.max_reached ? "TRIGGERED" : ""));
+    frc::SmartDashboard::PutString("LEFT Limit Low:", (LeftArm.min_reached ? "TRIGGERED" : ""));
 
-    // for (int i = 0; i < 5; i++) {
-    //     right_temp_values += Right_Payload_Lift_Leader.GetStatorCurrents();
-    //     left_temp_values += Left_Payload_Lift_Leader.GetStatorCurrent();
-    //     if (i == 4) {
+    frc::SmartDashboard::PutString("RIGHT Limit High:", (RightArm.max_reached ? "TRIGGERED" : ""));
+    frc::SmartDashboard::PutString("RIGHT Limit Low:", (RightArm.min_reached ? "TRIGGERED" : ""));
 
-    //     }
-    // }
+    // Print encoder values
+    frc::SmartDashboard::PutNumber("LEFT Encoder:", LeftArm.encoder_value);
+    frc::SmartDashboard::PutNumber("RIGHT Encoder:", RightArm.encoder_value);
 
-    // if (spike_in_current)
-    //     {
-    //         Right_Payload_Lift_Leader.Set(ControlMode::PercentOutput, 0);
-    //         Left_Payload_Lift_Leader.Set(ControlMode::PercentOutput, 0);
-    //     }
+    // Print stator current, min & max currents
+    frc::SmartDashboard::PutNumber("LEFT Current:", LeftArm.motor_current);
+    frc::SmartDashboard::PutNumber("LEFT MAX Current:", LeftArm.max_motor_current);
+
+    frc::SmartDashboard::PutNumber("RIGHT Current:", RightArm.motor_current);
+    frc::SmartDashboard::PutNumber("RIGHT MAX Current:", RightArm.max_motor_current);
 }
 
 void HangMech::writeTalonConfigs()
@@ -183,55 +233,3 @@ void HangMech::writeTalonConfigs()
     RightArm.Lift_Leader->Config_kD(HANG_SLOT_IDX, HANG_DERIVATIVE_CTRL);
     RightArm.Lift_Leader->Config_kF(HANG_SLOT_IDX, HANG_FEED_FWD_CTRL);
 }
-
-// not using this one this year, useful for reference/learning in the future
-// void HangMech::Hang_PercentOutput()
-// {
-//     // PID Tuning
-//     if (USE_JOYSTICK)
-//     {
-//         if (driver_two.GetRawButton(Y_BUTTON))
-//             proportional += 0.0001;
-//         if (driver_two.GetRawButton(X_BUTTON))
-//             proportional -= 0.0001;
-//         if (driver_two.GetRawButton(B_BUTTON))
-//             derivative += 0.0001;
-//         if (driver_two.GetRawButton(A_BUTTON))
-//             derivative -= 0.0001;
-//     }
-//     else
-//     {
-//         proportional = PROPORTIONAL_CONTROL;
-//         derivative = DERIVATIVE_CONTROL;
-//     }
-
-//     // Get the sensor measurement
-//     double angleActual = teensyGyro.GetAngleMeasurement();
-
-//     // Determine the error
-//     double errorCurrent = ANGLE_DESIRED - angleActual;
-
-//     // Determine change in error
-//     double errorChange = errorLast - errorCurrent;
-
-//     // Compute correction
-//     double speedChange = PROPORTIONAL_CONTROL * errorCurrent + DERIVATIVE_CONTROL * errorChange;
-
-//     // Determine new set speed
-//     double speedNew = speedCurrent + speedChange;
-
-//     // Contrain
-//     speedNew = Utils::Constrain(speedNew, -1, 1);
-
-//     speedNew *= SPEED_SCALAR;
-
-//     Right_Payload_Lift_Leader.Set(ControlMode::PercentOutput, speedNew);
-
-//     errorLast = errorCurrent;
-//     speedCurrent = speedNew;
-
-//     frc::SmartDashboard::PutNumber("Angle:", angleActual);
-//     frc::SmartDashboard::PutNumber("Speed:", speedCurrent);
-//     frc::SmartDashboard::PutNumber("Proportional:", proportional);
-//     frc::SmartDashboard::PutNumber("Derivative:", derivative);
-// }

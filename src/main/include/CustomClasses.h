@@ -7,14 +7,16 @@
 #include "ButtonMap.h"
 #include "ctre/Phoenix.h"
 #include "frc/DigitalInput.h"
+#include "frc/SerialPort.h"
 
-#include <vector>
-#include <stdio.h>
-#include <string.h>
+// #include <vector>
+// #include <stdio.h>
+// #include <string.h>
 
-#include "CIEColor.h"
-#include "ColorMatch.h"
-#include "ColorSensorV3.h"
+// #include "CIEColor.h"
+// #include "ColorMatch.h"
+// #include "ColorSensorV3.h"
+
 #include "cscore_oo.h"
 
 /* COMMAND BUTTON MAPPING -- DRIVE TRAIN */
@@ -35,7 +37,7 @@
 #define MANUAL_HANG_LEFT_AXIS (LEFT_WHEEL_Y)
 #define MANUAL_HANG_RIGHT_AXIS (RIGHT_WHEEL_Y)
 #define HANG_GYRO_ZERO_BUTTON_1 (RIGHT_BUMPER)
-#define HANG_GYRO_ZERO_BUTTON_2 (BUTTON_Y)
+#define HANG_GYRO_ZERO_BUTTON_2 (Y_BUTTON)
 
 /* COMMAND BUTTON MAPPING -- CONTROL PANEL */
 #define TOGGLE_CONTROL_PANEL_AUTO (BACK_BUTTON)
@@ -62,10 +64,14 @@ public:
 
   void AutoInit();
   void AutoDrive();
-  
+
   void Stop();
 
 private:
+  void allPrints();
+  void commandChecks();
+  void writeTalonConfigs();
+
   bool useSlowSpeed = false;
   bool pressedLastFrame_slowSpeed = false;
 
@@ -74,10 +80,7 @@ private:
 
   double gyroYaw = 0;
 
-  void commandChecks();
-  void writeTalonConfigs();
-
-  //Adds counter during AutoPeriodic to make robot drive forward for 3 seconds
+  // Adds counter during AutoPeriodic to make robot drive forward for 3 seconds
   int m_autoCtr = 0;
 };
 
@@ -87,14 +90,20 @@ class HangMech
 public:
   void Init();
   void Hang();
-  void CurrentSpiked();
 
 private:
+  void hangPosition();
+  void hangPercentOutput();
+
+  void commandChecks();
+  void allPrints();
+  void writeTalonConfigs();
+
   bool useAutoHang = false;
   bool pressedLastFrame_autoHang = false;
 
-  void commandChecks();
-  void writeTalonConfigs();
+  double speedCurrent = 0;
+  double errorLast = 0;
 };
 
 class LiftArm
@@ -103,8 +112,12 @@ public:
   void Init();
   void UpdateEncoder();
   void UpdateMotorCurrent();
-  void ManualHang(double);
+
+  void ManualHangPosition(double);
+  void ManualHangPercentOutput(double);
+
   void UpdatePosition(double);
+  void UpdateSpeed(double);
 
   WPI_TalonSRX *Lift_Leader;
   WPI_TalonSRX *Lift_Follower;
@@ -120,7 +133,10 @@ public:
 
   double motor_current = 0;
   double min_motor_current = 1000;
-  double max_motor_current = -1000;
+  double max_motor_current = 0;
+
+private:
+  void getLimits();
 };
 
 /****************************************** DRIVER CAMERAS ******************************************/
@@ -142,9 +158,9 @@ public:
   void Turn();
 
 private:
-  std::string first_colour = "";
-  std::string previous_colour = "";
-  std::string current_mode = "";
+  // std::string first_colour = "";
+  // std::string previous_colour = "";
+  // std::string current_mode = "";
 
   int confidence_count = 0;
   int num_colour_changed = 0;
@@ -167,26 +183,26 @@ private:
   void writeTalonConfigs();
 };
 
-class ColorSensorInterface
-{
-public:
-  ColorSensorInterface();
-  ~ColorSensorInterface();
-  std::string GetColorFromSensor(double);
-  bool ColorMatchesColorFromFMS();
+// class ColorSensorInterface
+// {
+// public:
+//   // ColorSensorInterface();
+//   // ~ColorSensorInterface();
+//   // std::string GetColorFromSensor(double);
+//   // bool ColorMatchesColorFromFMS();
 
-private:
-  std::shared_ptr<rev::ColorSensorV3> colorSensor;
+// private:
+//   // std::shared_ptr<rev::ColorSensorV3> colorSensor;
 
-  static constexpr frc::Color kBlueTarget = frc::Color(0.143, 0.427, 0.429);
-  static constexpr frc::Color kGreenTarget = frc::Color(0.197, 0.561, 0.240);
-  static constexpr frc::Color kRedTarget = frc::Color(0.561, 0.232, 0.114);
-  static constexpr frc::Color kYellowTarget = frc::Color(0.361, 0.524, 0.113);
-  rev::ColorMatch m_colorMatcher;
+//   // static constexpr frc::Color kBlueTarget = frc::Color(0.143, 0.427, 0.429);
+//   // static constexpr frc::Color kGreenTarget = frc::Color(0.197, 0.561, 0.240);
+//   // static constexpr frc::Color kRedTarget = frc::Color(0.561, 0.232, 0.114);
+//   // static constexpr frc::Color kYellowTarget = frc::Color(0.361, 0.524, 0.113);
+//   // rev::ColorMatch m_colorMatcher;
 
-  std::string colorFromFMS;
-  std::string getColorFromFMS();
-};
+//   // std::string colorFromFMS;
+//   // std::string getColorFromFMS();
+// };
 
 /****************************************** TEENSY GYRO ******************************************/
 class TeensyGyro

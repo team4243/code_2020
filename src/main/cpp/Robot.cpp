@@ -18,15 +18,6 @@ DriverCameras driverCameras;
 /******************** ROBOT INIT ********************/
 void Robot::RobotInit()
 {
-    if (ENABLE_DRIVE_TRAIN)
-        driveTrain.Init();
-
-    if (ENABLE_HANG_MECH)
-        hangMech.Init();
-
-    if (ENABLE_CONTROL_PANEL)
-        controlPanel.Init();
-
     if (ENABLE_DRIVER_CAMERAS)
         driverCameras.Init();
 }
@@ -53,9 +44,16 @@ void Robot::AutonomousInit()
 {
     if (ENABLE_DRIVE_TRAIN)
     {
+        driveTrain.Init();
         driveTrain.AutoInit();
         driveTrain.Stop();
     }
+
+    if (ENABLE_HANG_MECH)
+        hangMech.Init();
+
+    if (ENABLE_CONTROL_PANEL)
+        controlPanel.Init();
 }
 
 /******************** AUTONOMOUS PERIODIC ********************/
@@ -73,7 +71,16 @@ void Robot::AutonomousPeriodic()
 void Robot::TeleopInit()
 {
     if (ENABLE_DRIVE_TRAIN)
+    {
+        driveTrain.Init();
         driveTrain.Stop();
+    }
+
+    if (ENABLE_HANG_MECH)
+        hangMech.Init();
+
+    if (ENABLE_CONTROL_PANEL)
+        controlPanel.Init();
 }
 
 /******************** TELEOP PERIODIC ********************/

@@ -25,46 +25,65 @@ void LiftArm::Init()
     Lift_Follower->Follow(*Lift_Leader);
 }
 
-void LiftArm::ManualHang(double joystickInput)
+void LiftArm::ManualHangPosition(double joystickInput)
 {
     // Deadband
     joystickInput = Utils::DeadBand(joystickInput, HANG_JOYSTICK_DEADBAND);
 
     // Scale
-    // joystickInput *= MANUAL_HANG_SPEED;
+    joystickInput *= MANUAL_HANG_SPEED;
 
     // Update position
-    UpdatePosition(joystickInput); //* COUNTS_PER_REVOLUTION);
+    UpdatePosition(joystickInput * COUNTS_PER_REVOLUTION);
 }
 
-void LiftArm::UpdatePosition(double positionChange) // for now if we use percent outpu think of positionChange as just a percentage
+void LiftArm::ManualHangPercentOutput(double joystickInput)
 {
-    Lift_Leader->Set(ControlMode::PercentOutput, positionChange);
-    // // Get the limit switch readings
-    // max_reached = false; //Limit_High->Get();
-    // frc::SmartDashboard::PutString("LIMIT HIGH WARN:", "FORCED TO FALSE");
+    // Deadband
+    joystickInput = Utils::DeadBand(joystickInput, HANG_JOYSTICK_DEADBAND);
 
-    // min_reached = Limit_Low->Get();
+    // Scale
+    joystickInput *= MANUAL_HANG_SPEED;
 
-    // // Reject new positions ABOVE MAX if reached
-    // if (!max_reached && positionChange > 0)
-    // {
-    //     current_position += positionChange;
-    //     //Lift_Leader->Set(ControlMode::Position, current_position);
-    //     Lift_Leader->Set(ControlMode::PercentOutput, positionChange);
-    // }
+    // Update position
+    UpdateSpeed(joystickInput);
+}
 
-    // // Reject new positions BELOW MIN if reached
-    // else if (!min_reached && positionChange < 0)
-    // {
-    //     current_position += positionChange;
-    //     //Lift_Leader->Set(ControlMode::Position, current_position);
-    //     Lift_Leader->Set(ControlMode::PercentOutput, positionChange);
-    // }
+void LiftArm::UpdatePosition(double positionChange)
+{
+    getLimits();
 
-    // // Stop!!
-    // else if (max_reached || min_reached)
-    //     Lift_Leader->Set(ControlMode::PercentOutput, 0);
+    // Reject new positions ABOVE MAX if reached
+    if (!max_reached && positionChange > 0)
+    {
+        current_position += positionChange;
+        //Lift_Leader->Set(ControlMode::Position, current_position);
+        Lift_Leader->Set(ControlMode::PercentOutput, positionChange);
+    }
+
+    // Reject new positions BELOW MIN if reached
+    else if (!min_reached && positionChange < 0)
+    {
+        current_position += positionChange;
+        //Lift_Leader->Set(ControlMode::Position, current_position);
+        Lift_Leader->Set(ControlMode::PercentOutput, positionChange);
+    }
+
+    // Stop!!
+    else if (max_reached || min_reached)
+        Lift_Leader->Set(ControlMode::PercentOutput, 0);
+}
+
+void LiftArm::UpdateSpeed(double newSpeed)
+{
+    getLimits();
+
+    if (!min_reached && newSpeed > 0)
+        Lift_Leader->Set(ControlMode::PercentOutput, newSpeed);
+    else if (!max_reached && newSpeed < 0)
+        Lift_Leader->Set(ControlMode::PercentOutput, newSpeed);
+    else
+        Lift_Leader->Set(ControlMode::PercentOutput, 0);
 }
 
 void LiftArm::UpdateEncoder()
@@ -78,10 +97,17 @@ void LiftArm::UpdateMotorCurrent()
     motor_current = Lift_Leader->GetStatorCurrent();
 
     // Set MIN if lower
-    if (motor_current < min_motor_current)
+    if (abs(motor_current) < abs(min_motor_current))
         min_motor_current = motor_current;
 
     // Set MAX if higher
-    if (motor_current > max_motor_current)
+    if (abs(motor_current) > abs(max_motor_current))
         max_motor_current = motor_current;
+}
+
+void LiftArm::getLimits()
+{
+    // Get the limit switch readings
+    max_reached = false; //Limit_High->Get();
+    min_reached = Limit_Low->Get();
 }
