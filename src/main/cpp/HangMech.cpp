@@ -57,12 +57,6 @@ void HangMech::Init()
     useAutoHang = false;
     pressedLastFrame_autoHang = false;
 
-    LeftArm.motor_current = 0;
-    LeftArm.max_motor_current = 0;
-
-    RightArm.motor_current = 0;
-    RightArm.max_motor_current = 0;
-
     LeftArm.Lift_Leader = new WPI_TalonSRX(LIFT_LEFT_LEADER);
     LeftArm.Lift_Follower = new WPI_TalonSRX(LIFT_LEFT_FOLLOWER);
     RightArm.Lift_Leader = new WPI_TalonSRX(LIFT_RIGHT_LEADER);
@@ -72,6 +66,9 @@ void HangMech::Init()
     LeftArm.Limit_Low = new frc::DigitalInput(LEFT_LOW_DIO_CHANNEL_NUM);
     RightArm.Limit_High = new frc::DigitalInput(RIGHT_HIGH_DIO_CHANNEL_NUM);
     RightArm.Limit_Low = new frc::DigitalInput(RIGHT_LOW_DIO_CHANNEL_NUM);
+
+    LeftArm.Init();
+    RightArm.Init();
 
     if (WRITE_TALON_CONFIGURATIONS)
         writeTalonConfigs();
@@ -188,12 +185,6 @@ void HangMech::commandChecks()
     }
     else
         pressedLastFrame_autoHang = false;
-
-    // Print the mode
-    if (useAutoHang)
-        frc::SmartDashboard::PutString("Hang Mode:", "AUTO");
-    else
-        frc::SmartDashboard::PutString("Hang Mode:", "MANUAL");
 }
 
 void HangMech::allPrints()
@@ -215,6 +206,12 @@ void HangMech::allPrints()
 
     frc::SmartDashboard::PutNumber("RIGHT Current:", RightArm.motor_current);
     frc::SmartDashboard::PutNumber("RIGHT MAX Current:", RightArm.max_motor_current);
+
+    // Print the mode
+    if (useAutoHang)
+        frc::SmartDashboard::PutString("Hang Mode:", "AUTO");
+    else
+        frc::SmartDashboard::PutString("Hang Mode:", "MANUAL");
 }
 
 void HangMech::writeTalonConfigs()

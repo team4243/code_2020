@@ -132,7 +132,6 @@ public:
   double encoder_value = 0;
 
   double motor_current = 0;
-  double min_motor_current = 1000;
   double max_motor_current = 0;
 
 private:
@@ -217,7 +216,7 @@ public:
 class Utils
 {
 public:
-  static int WriteToFile(std::iostream, std::string);
+  // static int WriteToFile(std::iostream, std::string);
   static double DeadBand(double, double);
   static double Constrain(double, double, double);
 };

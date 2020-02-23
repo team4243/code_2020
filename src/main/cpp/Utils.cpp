@@ -1,7 +1,7 @@
 #include "CustomClasses.h"
 
-#include <stdio.h>
-#include <string.h>
+// #include <stdio.h>
+// #include <string.h>
 
 double Utils::DeadBand(double value, double band)
 {
@@ -21,9 +21,9 @@ double Utils::Constrain(double value, double min, double max)
     return value;
 }
 
-int Utils::WriteToFile(std::iostream fh, std::string value)
-{
-    //Sending report of the current to file
-    fh << value << std::endl;
-    return 0;
-}
+// int Utils::WriteToFile(std::iostream fh, std::string value)
+// {
+//     //Sending report of the current to file
+//     fh << value << std::endl;
+//     return 0;
+// }

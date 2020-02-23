@@ -44,7 +44,6 @@ void Robot::AutonomousInit()
 {
     if (ENABLE_DRIVE_TRAIN)
     {
-        driveTrain.Init();
         driveTrain.AutoInit();
         driveTrain.Stop();
     }

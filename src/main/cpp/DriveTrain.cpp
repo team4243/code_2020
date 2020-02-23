@@ -57,18 +57,10 @@ frc::MecanumDrive mecanumDrive{leftFront_Leader, leftRear_Leader, rightFront_Lea
 /* NAVX GYRO INSTANTIATION */
 AHRS navX_gyro{SPI::Port::kMXP};
 
-void DriveTrain::AutoInit() { m_autoCtr = 0; }
-
-void DriveTrain::AutoDrive()
+void DriveTrain::AutoInit()
 {
-    if (++m_autoCtr <= AUTO_MOVEMENT_ITERATIONS)
-    {
-        mecanumDrive.DriveCartesian(0.0, AUTO_MOVE, 0.0);
-    }
-    else
-    {
-        mecanumDrive.DriveCartesian(0.0, 0.0, AUTO_TWIRL);
-    }
+    Init();
+    m_autoCtr = 0;
 }
 
 void DriveTrain::Init()
@@ -87,6 +79,18 @@ void DriveTrain::Init()
     rightRear_Follower.Follow(rightRear_Leader);
 
     allPrints();
+}
+
+void DriveTrain::AutoDrive()
+{
+    if (++m_autoCtr <= AUTO_MOVEMENT_ITERATIONS)
+    {
+        mecanumDrive.DriveCartesian(0.0, AUTO_MOVE, 0.0);
+    }
+    else
+    {
+        mecanumDrive.DriveCartesian(0.0, 0.0, AUTO_TWIRL);
+    }
 }
 
 void DriveTrain::Drive()

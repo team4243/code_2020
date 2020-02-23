@@ -14,6 +14,9 @@
 
 void LiftArm::Init()
 {
+    motor_current = 0;
+    max_motor_current = 0;
+
     // Configure encoders
     Lift_Leader->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, 0);
     Lift_Leader->SetSensorPhase(false);
@@ -95,10 +98,6 @@ void LiftArm::UpdateMotorCurrent()
 {
     // Get stator current
     motor_current = Lift_Leader->GetStatorCurrent();
-
-    // Set MIN if lower
-    if (abs(motor_current) < abs(min_motor_current))
-        min_motor_current = motor_current;
 
     // Set MAX if higher
     if (abs(motor_current) > abs(max_motor_current))
