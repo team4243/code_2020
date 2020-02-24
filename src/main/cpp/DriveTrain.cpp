@@ -191,16 +191,10 @@ void DriveTrain::commandChecks()
 void DriveTrain::allPrints()
 {
     // Print the DRIVE mode
-    if (useFieldMode)
-        frc::SmartDashboard::PutString("Drive Mode:", "FIELD MODE");
-    else
-        frc::SmartDashboard::PutString("Drive Mode:", "BODY MODE");
+    frc::SmartDashboard::PutString("Drive Mode:", (useFieldMode ? "FIELD MODE" : "BODY MODE"));
 
     // Print the SPEED mode
-    if (useSlowSpeed)
-        frc::SmartDashboard::PutString("Drive Speed:", "SLOW");
-    else
-        frc::SmartDashboard::PutString("Drive Speed:", "FAST");
+    frc::SmartDashboard::PutString("Drive Speed:", (useSlowSpeed ? "SLOW" : "FAST"));
 }
 
 void DriveTrain::writeTalonConfigs()

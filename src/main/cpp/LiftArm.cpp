@@ -14,7 +14,9 @@
 
 void LiftArm::Init()
 {
+    current_position = 0;
     motor_current = 0;
+    min_motor_current = 0;
     max_motor_current = 0;
 
     // Configure encoders
@@ -58,16 +60,14 @@ void LiftArm::UpdatePosition(double positionChange)
     if (!max_reached && positionChange > 0)
     {
         current_position += positionChange;
-        //Lift_Leader->Set(ControlMode::Position, current_position);
-        Lift_Leader->Set(ControlMode::PercentOutput, positionChange);
+        Lift_Leader->Set(ControlMode::Position, current_position);
     }
 
     // Reject new positions BELOW MIN if reached
     else if (!min_reached && positionChange < 0)
     {
         current_position += positionChange;
-        //Lift_Leader->Set(ControlMode::Position, current_position);
-        Lift_Leader->Set(ControlMode::PercentOutput, positionChange);
+        Lift_Leader->Set(ControlMode::Position, current_position);
     }
 
     // Stop!!
@@ -97,8 +97,12 @@ void LiftArm::UpdateMotorCurrent()
     // Get stator current
     motor_current = Lift_Leader->GetStatorCurrent();
 
+    // Set MIN if lower
+    if (motor_current < min_motor_current)
+        min_motor_current = motor_current;
+
     // Set MAX if higher
-    if (abs(motor_current) > abs(max_motor_current))
+    if (motor_current > max_motor_current)
         max_motor_current = motor_current;
 }
 

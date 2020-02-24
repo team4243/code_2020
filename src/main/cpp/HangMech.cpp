@@ -57,6 +57,9 @@ void HangMech::Init()
     useAutoHang = false;
     pressedLastFrame_autoHang = false;
 
+    speedCurrent = 0;
+    errorLast = 0;
+
     LeftArm.Lift_Leader = new WPI_TalonSRX(LIFT_LEFT_LEADER);
     LeftArm.Lift_Follower = new WPI_TalonSRX(LIFT_LEFT_FOLLOWER);
     RightArm.Lift_Leader = new WPI_TalonSRX(LIFT_RIGHT_LEADER);
@@ -203,9 +206,11 @@ void HangMech::allPrints()
 
     // Print stator current, min & max currents
     frc::SmartDashboard::PutNumber("LEFT Current:", LeftArm.motor_current);
+    frc::SmartDashboard::PutNumber("LEFT MIN Current:", LeftArm.min_motor_current);
     frc::SmartDashboard::PutNumber("LEFT MAX Current:", LeftArm.max_motor_current);
 
     frc::SmartDashboard::PutNumber("RIGHT Current:", RightArm.motor_current);
+    frc::SmartDashboard::PutNumber("RIGHT MIN Current:", RightArm.min_motor_current);
     frc::SmartDashboard::PutNumber("RIGHT MAX Current:", RightArm.max_motor_current);
 
     // Print the mode
