@@ -79,10 +79,13 @@ void LiftArm::UpdateSpeed(double newSpeed)
 {
     getLimits();
 
+    // robot arms up is neg. and down is pos.
     if (!min_reached && newSpeed > 0)
         Lift_Leader->Set(ControlMode::PercentOutput, newSpeed);
+
     else if (!max_reached && newSpeed < 0)
         Lift_Leader->Set(ControlMode::PercentOutput, newSpeed);
+
     else
         Lift_Leader->Set(ControlMode::PercentOutput, 0);
 }

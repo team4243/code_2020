@@ -47,6 +47,7 @@
 #define DERIVATIVE_CONTROL (0.001)
 #define FEED_FORWARD_CONTROL (0)
 #define SPEED_SCALAR (0.5)
+#define TARGET_HANG_ANGLE (0.0)
 
 /* LIFT ARM OBJECTS */
 LiftArm LeftArm;
@@ -137,22 +138,26 @@ void HangMech::hangPosition()
 
 void HangMech::hangPercentOutput()
 {
-    // Get the sensor measurement
+    // Get the sensor measurement (in degrees)
     double angle = TeensyGyro::GetAngleMeasurement();
 
-    // Determine the error
-    double errorCurrent = angle;
+    // Determine the error (also in degrees)
+    double errorCurrent = TARGET_HANG_ANGLE - angle;
 
-    // Determine change in error
+    // Determine change in error (degrees per cycle)
     double errorChange = errorLast - errorCurrent;
 
-    // Compute correction
-    double speedChange = PROPORTIONAL_CONTROL * errorCurrent + DERIVATIVE_CONTROL * errorChange;
+    // Compute control term corrections 
+    double proportional = PROPORTIONAL_CONTROL * errorCurrent;
+    double derivative = DERIVATIVE_CONTROL * errorChange;
+
+    // Compute change in speed
+    double speedChange = proportional + derivative;
 
     // Determine new set speed
     double speedNew = speedCurrent + speedChange;
 
-    // Contrain
+    // Constrain
     speedNew = Utils::Constrain(speedNew, -1, 1);
 
     speedNew *= SPEED_SCALAR;
