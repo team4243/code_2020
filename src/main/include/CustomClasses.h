@@ -9,13 +9,15 @@
 #include "frc/DigitalInput.h"
 #include "frc/SerialPort.h"
 
-// #include <vector>
-// #include <stdio.h>
-// #include <string.h>
+#include <vector>
+#include <stdio.h>
+#include <string.h>
 
-// #include "CIEColor.h"
-// #include "ColorMatch.h"
-// #include "ColorSensorV3.h"
+#include "frc/util/Color.h"
+
+#include "rev/CIEColor.h"
+#include "rev/ColorSensorV3.h"
+#include "rev/ColorMatch.h"
 
 #include "cscore_oo.h"
 
@@ -158,9 +160,9 @@ public:
   void Turn();
 
 private:
-  // std::string first_colour = "";
-  // std::string previous_colour = "";
-  // std::string current_mode = "";
+  std::string first_colour = "";
+  std::string previous_colour = "";
+  std::string current_mode = "";
 
   int confidence_count = 0;
   int num_colour_changed = 0;
@@ -183,26 +185,26 @@ private:
   void writeTalonConfigs();
 };
 
-// class ColorSensorInterface
-// {
-// public:
-//   // ColorSensorInterface();
-//   // ~ColorSensorInterface();
-//   // std::string GetColorFromSensor(double);
-//   // bool ColorMatchesColorFromFMS();
+class ColorSensorInterface
+{
+public:
+  ColorSensorInterface();
+  ~ColorSensorInterface();
+  std::string GetColorFromSensor(double);
+  bool ColorMatchesColorFromFMS();
+  std::string GetColorFromFMS();
 
-// private:
-//   // std::shared_ptr<rev::ColorSensorV3> colorSensor;
+private:
+  std::shared_ptr<rev::ColorSensorV3> colorSensor;
 
-//   // static constexpr frc::Color kBlueTarget = frc::Color(0.143, 0.427, 0.429);
-//   // static constexpr frc::Color kGreenTarget = frc::Color(0.197, 0.561, 0.240);
-//   // static constexpr frc::Color kRedTarget = frc::Color(0.561, 0.232, 0.114);
-//   // static constexpr frc::Color kYellowTarget = frc::Color(0.361, 0.524, 0.113);
-//   // rev::ColorMatch m_colorMatcher;
+  static constexpr frc::Color kBlueTarget = frc::Color(0.143, 0.427, 0.429);
+  static constexpr frc::Color kGreenTarget = frc::Color(0.197, 0.561, 0.240);
+  static constexpr frc::Color kRedTarget = frc::Color(0.561, 0.232, 0.114);
+  static constexpr frc::Color kYellowTarget = frc::Color(0.361, 0.524, 0.113);
+  rev::ColorMatch m_colorMatcher;
 
-//   // std::string colorFromFMS;
-//   // std::string getColorFromFMS();
-// };
+  std::string colorFromFMS;
+};
 
 /****************************************** TEENSY GYRO ******************************************/
 class TeensyGyro

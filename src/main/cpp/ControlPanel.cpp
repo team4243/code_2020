@@ -25,7 +25,7 @@
 
 WPI_TalonSRX ControlPanel_Motor{CONTROL_PANEL_WHEEL};
 
-//ColorSensorInterface colorSensorInterface;
+ColorSensorInterface colorSensorInterface;
 
 void ControlPanel::Init()
 {
@@ -55,23 +55,26 @@ void ControlPanel::Turn()
 
     countTurns();
 
-    // if (isManual)
-    // {
-    //     manualTurn();
-    //     current_mode = "manual";
-    // }
-    // else if (isTurningThrice)
-    // {
-    //     turnThreeTimes();
-    //     current_mode = "turn3";
-    // }
-    // if (isTurningToColour)
-    // {
-    //     turnToColour();
-    //     current_mode = "toColour";
-    // }
+    if (isManual)
+    {
+        manualTurn();
+        current_mode = "manual";
+    }
+    else if (isTurningThrice)
+    {
+        turnThreeTimes();
+        current_mode = "turn3";
+    }
+    if (isTurningToColour)
+    {
+        turnToColour();
+        current_mode = "toColour";
+    }
 
-    // frc::SmartDashboard::PutString("Mode:", current_mode);
+    frc::SmartDashboard::PutString("Mode:", current_mode);
+    frc::SmartDashboard::PutString("Color", colorSensorInterface.GetColorFromSensor(0.70));
+    frc::SmartDashboard::PutString("Target", colorSensorInterface.GetColorFromFMS());
+    frc::SmartDashboard::PutNumber("Num Turns", num_colour_changed);
 }
 
 void ControlPanel::manualTurn()
@@ -85,22 +88,17 @@ void ControlPanel::manualTurn()
 void ControlPanel::turnThreeTimes()
 {
     if (num_colour_changed < 32)
-        ControlPanel_Motor.Set(ControlMode::PercentOutput, 20);
+        ControlPanel_Motor.Set(ControlMode::PercentOutput, 0.2);
     else
         ControlPanel_Motor.Set(ControlMode::PercentOutput, 0);
 }
 
 void ControlPanel::turnToColour()
 {
-    // if (driver_two.GetRawButton(X_BUTTON))
-    // {
-    //     std::string foundcolor = colorSensorInterface.GetColorFromSensor(0.70);
-    //     frc::SmartDashboard::PutString("Color Sense", foundcolor);
-    // }
-    // if (colorSensorInterface.ColorMatchesColorFromFMS())
-    //     ControlPanel_Motor.Set(ControlMode::PercentOutput, 0);
-    // else
-    //     ControlPanel_Motor.Set(ControlMode::PercentOutput, 20);
+    if (colorSensorInterface.ColorMatchesColorFromFMS())
+        ControlPanel_Motor.Set(ControlMode::PercentOutput, 0);
+    else
+        ControlPanel_Motor.Set(ControlMode::PercentOutput, 0.2);
 }
 
 void ControlPanel::stopMotor()
@@ -111,16 +109,16 @@ void ControlPanel::stopMotor()
 void ControlPanel::countTurns()
 {
     // try this but if it doesn't work oh well
-    // if (!(colorSensorInterface.GetColorFromSensor(0.80).compare(previous_colour)))
-    // {
-    //     confidence_count++;
-    //     if (confidence_count == 3)
-    //     {
-    //         confidence_count = 0;
-    //         previous_colour = colorSensorInterface.GetColorFromSensor(0.80);
-    //         num_colour_changed++;
-    //     }
-    // }
+    if (!(colorSensorInterface.GetColorFromSensor(0.80).compare(previous_colour)))
+    {
+        confidence_count++;
+        if (confidence_count == 3)
+        {
+            confidence_count = 0;
+            previous_colour = colorSensorInterface.GetColorFromSensor(0.80);
+            num_colour_changed++;
+        }
+    }
 }
 
 void ControlPanel::commandChecks()
