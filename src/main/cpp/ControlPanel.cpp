@@ -55,6 +55,7 @@ void ControlPanel::Turn()
 
     countTurns();
 
+    manualTurn();
     // if (isManual)
     // {
     //     manualTurn();

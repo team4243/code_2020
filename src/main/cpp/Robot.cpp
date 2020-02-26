@@ -4,7 +4,7 @@
 #include "frc/smartdashboard/SmartDashboard.h"
 
 /* SYSTEM ENABLING */
-#define ENABLE_DRIVE_TRAIN (true)
+#define ENABLE_DRIVE_TRAIN (false)
 #define ENABLE_HANG_MECH (true)
 #define ENABLE_CONTROL_PANEL (false)
 #define ENABLE_DRIVER_CAMERAS (false)

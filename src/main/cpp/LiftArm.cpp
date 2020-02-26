@@ -30,6 +30,8 @@ void LiftArm::Init()
 
 void LiftArm::ManualHangPosition(double joystickInput)
 {
+    getLimits();
+    
     // Deadband
     joystickInput = Utils::DeadBand(joystickInput, HANG_JOYSTICK_DEADBAND);
 
@@ -42,6 +44,8 @@ void LiftArm::ManualHangPosition(double joystickInput)
 
 void LiftArm::ManualHangPercentOutput(double joystickInput)
 {
+    getLimits();
+
     // Deadband
     joystickInput = Utils::DeadBand(joystickInput, HANG_JOYSTICK_DEADBAND);
 
