@@ -23,6 +23,7 @@
 #define CONTROLPANEL_RAMP_TIME (0)
 #define CONTROLPANEL_SLOT_IDX (0)
 
+
 WPI_TalonSRX ControlPanel_Motor{CONTROL_PANEL_WHEEL};
 
 //ColorSensorInterface colorSensorInterface;

@@ -65,7 +65,7 @@ void HangMech::Init()
     LeftArm.Lift_Follower = new WPI_TalonSRX(LIFT_LEFT_FOLLOWER);
     RightArm.Lift_Leader = new WPI_TalonSRX(LIFT_RIGHT_LEADER);
     RightArm.Lift_Follower = new WPI_TalonSRX(LIFT_RIGHT_FOLLOWER);
-
+    
     LeftArm.Limit_High = new frc::DigitalInput(LEFT_HIGH_DIO_CHANNEL_NUM);
     LeftArm.Limit_Low = new frc::DigitalInput(LEFT_LOW_DIO_CHANNEL_NUM);
     RightArm.Limit_High = new frc::DigitalInput(RIGHT_HIGH_DIO_CHANNEL_NUM);

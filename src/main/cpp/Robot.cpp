@@ -95,6 +95,7 @@ void Robot::TeleopPeriodic()
 
     if (ENABLE_CONTROL_PANEL)
         controlPanel.Turn();
+
 }
 
 void Robot::TestPeriodic() {}
