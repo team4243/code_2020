@@ -7,6 +7,7 @@
 #include "ButtonMap.h"
 #include "ctre/Phoenix.h"
 #include "frc/DigitalInput.h"
+#include "frc/AnalogInput.h"
 #include "frc/SerialPort.h"
 
 // #include <vector>
@@ -122,7 +123,7 @@ public:
   WPI_TalonSRX *Lift_Leader;
   WPI_TalonSRX *Lift_Follower;
 
-  frc::DigitalInput *Limit_High;
+  frc::AnalogInput *Limit_High;
   frc::DigitalInput *Limit_Low;
 
   bool max_reached = false;

@@ -4,6 +4,7 @@
 #include "ctre/Phoenix.h"
 
 #include "frc/DigitalInput.h"
+#include "frc/AnalogInput.h"
 
 /* TUNING VARIABLES */
 #define HANG_JOYSTICK_DEADBAND (0.15)
@@ -31,7 +32,7 @@ void LiftArm::Init()
 void LiftArm::ManualHangPosition(double joystickInput)
 {
     getLimits();
-    
+
     // Deadband
     joystickInput = Utils::DeadBand(joystickInput, HANG_JOYSTICK_DEADBAND);
 
@@ -116,6 +117,11 @@ void LiftArm::UpdateMotorCurrent()
 void LiftArm::getLimits()
 {
     // Get the limit switch readings
-    max_reached = false; //Limit_High->Get();
+    // int analogRead = Limit_High->GetValue();
+    // max_reached = (analogVoltage > 2000);
+
+    double analogVoltage = Limit_High->GetVoltage();
+    max_reached = (analogVoltage > 2.5);
+
     min_reached = Limit_Low->Get();
 }

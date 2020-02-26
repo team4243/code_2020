@@ -4,6 +4,7 @@
 #include "ctre/Phoenix.h"
 
 #include "frc/DigitalInput.h"
+#include "frc/AnalogInput.h"
 
 /* TUNING VARIABLES */
 #define USE_POSITION_CONTROL (false)
@@ -18,10 +19,12 @@
 // Gear ratios: 1, 0.8, 0.55
 #define HEIGHT_PER_REVOLUTION (0.5 * 1)
 
-/* DIO CHANNEL NUMBERS (0 - 9)*/
-#define LEFT_HIGH_DIO_CHANNEL_NUM (3) //not installed
-#define LEFT_LOW_DIO_CHANNEL_NUM (0)
-#define RIGHT_HIGH_DIO_CHANNEL_NUM (2) // not installed
+/* AIO (ANALOG) CHANNEL NUMBERS (0 - 3)*/
+#define LEFT_HIGH_DIO_CHANNEL_NUM (0)
+#define RIGHT_HIGH_DIO_CHANNEL_NUM (1)
+
+/* DIO (DIGITAL) CHANNEL NUMBERS (0 - 9)*/
+#define LEFT_LOW_DIO_CHANNEL_NUM (0) 
 #define RIGHT_LOW_DIO_CHANNEL_NUM (1)
 
 /* MOTOR DEFINITIONS*/
@@ -66,9 +69,10 @@ void HangMech::Init()
     RightArm.Lift_Leader = new WPI_TalonSRX(LIFT_RIGHT_LEADER);
     RightArm.Lift_Follower = new WPI_TalonSRX(LIFT_RIGHT_FOLLOWER);
 
-    LeftArm.Limit_High = new frc::DigitalInput(LEFT_HIGH_DIO_CHANNEL_NUM);
+    LeftArm.Limit_High = new frc::AnalogInput(LEFT_HIGH_DIO_CHANNEL_NUM);
+    RightArm.Limit_High = new frc::AnalogInput(RIGHT_HIGH_DIO_CHANNEL_NUM);
+    
     LeftArm.Limit_Low = new frc::DigitalInput(LEFT_LOW_DIO_CHANNEL_NUM);
-    RightArm.Limit_High = new frc::DigitalInput(RIGHT_HIGH_DIO_CHANNEL_NUM);
     RightArm.Limit_Low = new frc::DigitalInput(RIGHT_LOW_DIO_CHANNEL_NUM);
 
     LeftArm.Init();
