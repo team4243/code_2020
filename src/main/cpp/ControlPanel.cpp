@@ -6,7 +6,7 @@
 #include "frc/smartdashboard/SmartDashboard.h"
 
 /* TUNING VARIABLEs */
-#define CONTROL_PANEL_SCALAR (0.5)
+#define CONTROL_PANEL_SCALAR (0.3)
 #define REQUIRED_CONFIDENCE (0.80)
 #define WRITE_TALON_CONFIGURATIONS (true)
 #define CONTROLPANEL_TRIGGER_DEADBAND (0.15)
