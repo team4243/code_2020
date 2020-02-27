@@ -37,8 +37,8 @@
 #define LIFT_RIGHT_FOLLOWER (60)
 
 /* TALON CONFIGURATION */
-#define HANG_PEAK_OUTPUT_FWD (0.5)
-#define HANG_PEAK_OUTPUT_REV (-0.5)
+#define HANG_PEAK_OUTPUT_FWD (1)
+#define HANG_PEAK_OUTPUT_REV (-1)
 #define HANG_PROPORTIONAL_CTRL (0.25)
 #define HANG_DERIVATIVE_CTRL (10)
 #define HANG_FEED_FWD_CTRL (0.0)
@@ -48,12 +48,11 @@
 /* PERCENT OUTPUT PID CONTROL TUNE */
 #define PROPORTIONAL_CONTROL (0.01)
 #define DERIVATIVE_CONTROL (0.001)
-#define FEED_FORWARD_CONTROL (0)
 #define TARGET_HANG_ANGLE (0.0)
 
-#define HIGH_SPEED_SCALAR (0.5)
-#define LOW_SPEED_SCALAR (0.15)
-#define AUTO_SPEED_SCALAR (0.5)
+#define HIGH_SPEED_SCALAR (1.0)
+#define LOW_SPEED_SCALAR (0.5)
+#define AUTO_SPEED_SCALAR (1.0)
 
 /* LIFT ARM OBJECTS */
 LiftArm LeftArm;
@@ -115,7 +114,7 @@ void HangMech::Hang()
         }
         else
         {
-            double speedScalar =(double)(useSlowSpeed ? LOW_SPEED_SCALAR : HIGH_SPEED_SCALAR);
+            double speedScalar = (double)(useSlowSpeed ? LOW_SPEED_SCALAR : HIGH_SPEED_SCALAR);
             LeftArm.ManualHangPercentOutput(driver_two.GetRawAxis(MANUAL_HANG_LEFT_AXIS) * speedScalar);
             RightArm.ManualHangPercentOutput(driver_two.GetRawAxis(MANUAL_HANG_RIGHT_AXIS) * speedScalar);
         }
@@ -203,11 +202,13 @@ void HangMech::commandChecks()
         }
     }
     else
+    {
         pressedLastFrame_autoHang = false;
+    }
 
     useSlowSpeed = driver_two.GetRawAxis(HANG_SLOW_MODE) > 0.5;
 
-    if (driver_two.GetRawButton(HANG_GYRO_ZERO_BUTTON_1) && driver_two.GetRawButton(HANG_GYRO_ZERO_BUTTON_2))
+    if (driver_two.GetRawButton(HANG_GYRO_RESET_BUTTON_1) && driver_two.GetRawButton(HANG_GYRO_RESET_BUTTON_2))
     {
         TeensyGyro::Reset();
     }

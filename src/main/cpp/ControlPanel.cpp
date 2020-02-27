@@ -1,7 +1,6 @@
 #include "CustomClasses.h"
 
 #include "ctre/Phoenix.h"
-// #include "string.h"
 
 #include "frc/smartdashboard/SmartDashboard.h"
 
@@ -27,6 +26,9 @@ VictorSPX ControlPanel_Motor{CONTROL_PANEL_WHEEL};
 
 //ColorSensorInterface colorSensorInterface;
 
+rev::ColorSensorV3 colorSensor{frc::I2C::Port::kOnboard};
+rev::ColorMatch colorMatcher;
+
 void ControlPanel::Init()
 {
     /*This method gives Driver 2 the ability to manually spin the control panel wheel.
@@ -45,15 +47,20 @@ void ControlPanel::Init()
     isTurningToColour = false;
     isManual = true;
 
+    colorMatcher.AddColorMatch(blueTarget);
+    colorMatcher.AddColorMatch(redTarget);
+    colorMatcher.AddColorMatch(greenTarget);
+    colorMatcher.AddColorMatch(yellowTarget);
+
     if (WRITE_TALON_CONFIGURATIONS)
         writeTalonConfigs();
 }
 
 void ControlPanel::Turn()
 {
-    // commandChecks();
+    commandChecks();
 
-    // countTurns();
+    countTurns();
 
     manualTurn();
 
@@ -94,12 +101,7 @@ void ControlPanel::turnThreeTimes()
 
 void ControlPanel::turnToColour()
 {
-    // if (driver_two.GetRawButton(X_BUTTON))
-    // {
-    //     std::string foundcolor = colorSensorInterface.GetColorFromSensor(0.70);
-    //     frc::SmartDashboard::PutString("Color Sense", foundcolor);
-    // }
-    // if (colorSensorInterface.ColorMatchesColorFromFMS())
+    // if (strcmp(colourString[0], getColorFromFMS()))
     //     ControlPanel_Motor.Set(ControlMode::PercentOutput, 0);
     // else
     //     ControlPanel_Motor.Set(ControlMode::PercentOutput, 20);
@@ -113,16 +115,16 @@ void ControlPanel::stopMotor()
 void ControlPanel::countTurns()
 {
     // try this but if it doesn't work oh well
-    // if (!(colorSensorInterface.GetColorFromSensor(0.80).compare(previous_colour)))
-    // {
-    //     confidence_count++;
-    //     if (confidence_count == 3)
-    //     {
-    //         confidence_count = 0;
-    //         previous_colour = colorSensorInterface.GetColorFromSensor(0.80);
-    //         num_colour_changed++;
-    //     }
-    // }
+    if (!(colourString.compare(previous_colour)))
+    {
+        confidence_count++;
+        if (confidence_count == 3)
+        {
+            confidence_count = 0;
+            previous_colour = colourString;
+            num_colour_changed++;
+        }
+    }
 }
 
 void ControlPanel::commandChecks()
@@ -164,6 +166,67 @@ void ControlPanel::commandChecks()
         isManual = false;
         isTurningThrice = false;
     }
+
+    // printing stuff
+    colour = colorSensor.GetColor();
+    double confidence = 0.70;
+    colour = colorMatcher.MatchClosestColor(colour, confidence);
+    std::string colourString = toColourString(colour);
+
+    frc::SmartDashboard::PutString("Colour", colourString);
+    frc::SmartDashboard::PutString("Target C", targetColour);
+}
+
+std::string ControlPanel::toColourString(frc::Color colorS)
+{
+    if (colorS == blueTarget)
+        return "Blue";
+    if (colorS == redTarget)
+        return "Red";
+    if (colorS == greenTarget)
+        return "Green";
+    if (colorS == yellowTarget)
+        return "Yellow";
+    else
+    {
+        return "";
+    }
+    
+}
+
+std::string ControlPanel::getColorFromFMS()
+{
+    std::string gameData;
+    gameData = frc::DriverStation::GetInstance().GetGameSpecificMessage();
+
+    if (gameData.length() > 0)
+    {
+        targetColour = gameData.substr(0, 1); // B, G, R, Y
+        switch (gameData[0])
+        {
+            case 'B' :
+            //Blue case code
+            break;
+            case 'G' :
+            //Green case code
+            break;
+            case 'R' :
+            //Red case code
+            break;
+            case 'Y' :
+            //Yellow case code
+            break;
+            default :
+            //This is corrupt data
+            break;
+        }
+    }
+    else
+    {
+        printf("\nNo color received from FMS");
+        //Code for no data received yet
+    }
+    return targetColour;
 }
 
 void ControlPanel::writeTalonConfigs()

@@ -7,8 +7,8 @@
 #include "AHRS.h"
 
 /* TUNING VARIABLES */
-#define LOW_SPEED_SCALAR (0.05)
-#define HIGH_SPEED_SCALAR (0.35)
+#define LOW_SPEED_SCALAR (0.25)
+#define HIGH_SPEED_SCALAR (0.75)
 
 #define WRITE_TALON_CONFIGURATIONS (false)
 #define DRIVE_JOYSTICK_DEADBAND (0.10)
@@ -17,8 +17,8 @@
 #define AUTO_MOVEMENT_DURATION (3.0)
 #define LOOP_FREQUENCY (50)
 #define AUTO_MOVEMENT_ITERATIONS (AUTO_MOVEMENT_DURATION * LOOP_FREQUENCY)
-#define AUTO_MOVE (0.4)
-#define AUTO_TWIRL (0.0)
+#define AUTO_MOVE (0.5)
+#define AUTO_TWIRL (0.2)
 
 /* MOTOR CONTROLLERS CAN DEVICE NUMBERS */
 #define DRIVE_REAR_RIGHT_LEADER (12)
@@ -158,28 +158,28 @@ void DriveTrain::commandChecks()
         pressedLastFrame_fieldMode = false;
 
     // Check for SLOW SPEED toggle and update dashboard
-    // if (driver_one.GetRawButton(TOGGLE_SLOW_SPEED_BUTTON))
-    // {
-    //     // Command button debounce
-    //     if (!pressedLastFrame_slowSpeed)
-    //     {
-    //         pressedLastFrame_slowSpeed = true;
+    if (driver_one.GetRawButton(TOGGLE_SLOW_SPEED_BUTTON))
+    {
+        // Command button debounce
+        if (!pressedLastFrame_slowSpeed)
+        {
+            pressedLastFrame_slowSpeed = true;
 
-    //         // Toggle the mode
-    //         useSlowSpeed = !useSlowSpeed;
-    //         allPrints();
-    //     }
-    // }
-    // else
-    //     pressedLastFrame_slowSpeed = false;
+            // Toggle the mode
+            useSlowSpeed = !useSlowSpeed;
+            allPrints();
+        }
+    }
+    else
+        pressedLastFrame_slowSpeed = false;
 
-    useSlowSpeed = driver_one.GetRawButton(TOGGLE_SLOW_SPEED_BUTTON);
+    // useSlowSpeed = driver_one.GetRawAxis(TOGGLE_SLOW_SPEED_BUTTON) > 0.5;
  
     // Gyro functions for FIELD MODE
     if (useFieldMode)
     {
         // Check for command to ZERO the GYRO
-        if (driver_one.GetRawButton(DRIVE_GYRO_ZERO_BUTTON))
+        if (driver_one.GetRawAxis(DRIVE_GYRO_ZERO_BUTTON) > 0.50)
             navX_gyro.ZeroYaw();
 
         // Get gyro measurement

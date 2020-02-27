@@ -14,15 +14,18 @@
 // #include "stdio.h"
 #include "string.h"
 
-// #include "rev/CIEColor.h"
-// #include "rev/ColorMatch.h"
-// #include "rev/ColorSensorV3.h"
+#include "rev/CIEColor.h"
+#include "rev/ColorMatch.h"
+#include "rev/ColorSensorV3.h"
+
+#include "frc/util/Color.h"
+#include "frc/DriverStation.h"
 
 #include "cscore_oo.h"
 
 /* COMMAND BUTTON MAPPING -- DRIVE TRAIN */
-#define DRIVE_GYRO_ZERO_BUTTON (RIGHT_BUMPER)
-#define TOGGLE_SLOW_SPEED_BUTTON (RIGHT_TRIGGER)
+#define DRIVE_GYRO_ZERO_BUTTON (RIGHT_TRIGGER)
+#define TOGGLE_SLOW_SPEED_BUTTON (RIGHT_BUMPER)
 #define TOGGLE_FIELD_MODE_BUTTON (LEFT_BUMPER)
 #define JOYSTICK_X_AXIS (LEFT_WHEEL_X)
 #define JOYSTICK_Y_AXIS (LEFT_WHEEL_Y)
@@ -37,8 +40,8 @@
 #define TOGGLE_HANG_MECH_AUTO (START_BUTTON)
 #define MANUAL_HANG_LEFT_AXIS (LEFT_WHEEL_Y)
 #define MANUAL_HANG_RIGHT_AXIS (RIGHT_WHEEL_Y)
-#define HANG_GYRO_ZERO_BUTTON_1 (RIGHT_BUMPER)
-#define HANG_GYRO_ZERO_BUTTON_2 (Y_BUTTON)
+#define HANG_GYRO_RESET_BUTTON_1 (RIGHT_BUMPER)
+#define HANG_GYRO_RESET_BUTTON_2 (Y_BUTTON)
 #define HANG_SLOW_MODE (LEFT_TRIGGER)
 
 /* COMMAND BUTTON MAPPING -- CONTROL PANEL */
@@ -73,7 +76,7 @@ private:
   void writeTalonConfigs();
 
   bool useSlowSpeed = false;
-  // bool pressedLastFrame_slowSpeed = false;
+  bool pressedLastFrame_slowSpeed = false;
 
   bool useFieldMode = false;
   bool pressedLastFrame_fieldMode = false;
@@ -159,9 +162,18 @@ public:
   void Turn();
 
 private:
-  std::string first_colour = "";
+  frc::Color colour;
+
+  static constexpr frc::Color blueTarget = frc::Color(0.143, 0.427, 0.429);
+  static constexpr frc::Color greenTarget = frc::Color(0.197, 0.561, 0.240);
+  static constexpr frc::Color redTarget = frc::Color(0.561, 0.232, 0.114);
+  static constexpr frc::Color yellowTarget = frc::Color(0.361, 0.524, 0.113);
+
+  // std::string first_colour = "";
   std::string previous_colour = "";
   std::string current_mode = "";
+  std::string colourString = "";
+  std::string targetColour = "";
 
   int confidence_count = 0;
   int num_colour_changed = 0;
@@ -182,6 +194,9 @@ private:
   void countTurns();
   void commandChecks();
   void writeTalonConfigs();
+  std::string toColourString(frc::Color);
+
+  std::string getColorFromFMS();
   void printStuff();
 };
 
