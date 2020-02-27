@@ -51,7 +51,7 @@
 #define TARGET_HANG_ANGLE (0.0)
 
 #define HIGH_SPEED_SCALAR (1.0)
-#define LOW_SPEED_SCALAR (0.5)
+#define LOW_SPEED_SCALAR (0.4)
 #define AUTO_SPEED_SCALAR (1.0)
 
 /* LIFT ARM OBJECTS */
@@ -73,8 +73,8 @@ void HangMech::Init()
     RightArm.Lift_Leader = new WPI_TalonSRX(LIFT_RIGHT_LEADER);
     RightArm.Lift_Follower = new WPI_TalonSRX(LIFT_RIGHT_FOLLOWER);
 
-    LeftArm.Limit_High = new frc::AnalogInput(LEFT_HIGH_DIO_CHANNEL_NUM);
-    RightArm.Limit_High = new frc::AnalogInput(RIGHT_HIGH_DIO_CHANNEL_NUM);
+    LeftArm.Limit_High = new frc::DigitalInput(LEFT_HIGH_DIO_CHANNEL_NUM);
+    RightArm.Limit_High = new frc::DigitalInput(RIGHT_HIGH_DIO_CHANNEL_NUM);
 
     LeftArm.Limit_Low = new frc::DigitalInput(LEFT_LOW_DIO_CHANNEL_NUM);
     RightArm.Limit_Low = new frc::DigitalInput(RIGHT_LOW_DIO_CHANNEL_NUM);
@@ -206,7 +206,21 @@ void HangMech::commandChecks()
         pressedLastFrame_autoHang = false;
     }
 
-    useSlowSpeed = driver_two.GetRawAxis(HANG_SLOW_MODE) > 0.5;
+    // useSlowSpeed = driver_two.GetRawAxis(HANG_SLOW_MODE) > 0.5;
+    if (driver_two.GetRawButton(HANG_SLOW_MODE))
+    {
+        // Command button debounce
+        if (!pressedLastFrame_slowSpeed)
+        {
+            pressedLastFrame_slowSpeed = true;
+
+            // Toggle the mode
+            useSlowSpeed = !useSlowSpeed;
+            allPrints();
+        }
+    }
+    else
+        pressedLastFrame_slowSpeed = false;
 
     if (driver_two.GetRawButton(HANG_GYRO_RESET_BUTTON_1) && driver_two.GetRawButton(HANG_GYRO_RESET_BUTTON_2))
     {
@@ -238,6 +252,7 @@ void HangMech::allPrints()
 
     // Print the mode
     frc::SmartDashboard::PutString("Hang Mode:", (useAutoHang ? "AUTO" : "MANUAL"));
+    frc::SmartDashboard::PutString("Hang Speed", (useSlowSpeed ? "SLOW" : "FAST"));
 }
 
 void HangMech::writeTalonConfigs()

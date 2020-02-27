@@ -42,7 +42,7 @@
 #define MANUAL_HANG_RIGHT_AXIS (RIGHT_WHEEL_Y)
 #define HANG_GYRO_RESET_BUTTON_1 (RIGHT_BUMPER)
 #define HANG_GYRO_RESET_BUTTON_2 (Y_BUTTON)
-#define HANG_SLOW_MODE (LEFT_TRIGGER)
+#define HANG_SLOW_MODE (RIGHT_BUMPER)
 
 /* COMMAND BUTTON MAPPING -- CONTROL PANEL */
 #define TOGGLE_CONTROL_PANEL_AUTO (BACK_BUTTON)
@@ -105,6 +105,7 @@ private:
   bool useAutoHang = false;
   bool pressedLastFrame_autoHang = false;
   bool useSlowSpeed = false;
+  bool pressedLastFrame_slowSpeed = false;
 
   double speedCurrent = 0;
   double errorLast = 0;
@@ -126,7 +127,7 @@ public:
   WPI_TalonSRX *Lift_Leader;
   WPI_TalonSRX *Lift_Follower;
 
-  frc::AnalogInput *Limit_High;
+  frc::DigitalInput *Limit_High;
   frc::DigitalInput *Limit_Low;
 
   bool max_reached = false;
