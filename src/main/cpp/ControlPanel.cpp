@@ -8,7 +8,7 @@
 /* TUNING VARIABLEs */
 #define CONTROL_PANEL_SCALAR (0.5)
 #define REQUIRED_CONFIDENCE (0.80)
-#define WRITE_TALON_CONFIGURATIONS (false)
+#define WRITE_TALON_CONFIGURATIONS (true)
 #define CONTROLPANEL_TRIGGER_DEADBAND (0.15)
 
 /* TALON SRX CAN DEVICE(S)*/
@@ -23,7 +23,7 @@
 #define CONTROLPANEL_RAMP_TIME (0)
 #define CONTROLPANEL_SLOT_IDX (0)
 
-WPI_TalonSRX ControlPanel_Motor{CONTROL_PANEL_WHEEL};
+VictorSPX ControlPanel_Motor{CONTROL_PANEL_WHEEL};
 
 //ColorSensorInterface colorSensorInterface;
 
@@ -51,11 +51,12 @@ void ControlPanel::Init()
 
 void ControlPanel::Turn()
 {
-    commandChecks();
+    // commandChecks();
 
-    countTurns();
+    // countTurns();
 
     manualTurn();
+
     // if (isManual)
     // {
     //     manualTurn();

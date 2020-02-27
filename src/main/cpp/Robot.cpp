@@ -4,10 +4,10 @@
 #include "frc/smartdashboard/SmartDashboard.h"
 
 /* SYSTEM ENABLING */
-#define ENABLE_DRIVE_TRAIN (false)
+#define ENABLE_DRIVE_TRAIN (true)
 #define ENABLE_HANG_MECH (true)
-#define ENABLE_CONTROL_PANEL (false)
-#define ENABLE_DRIVER_CAMERAS (false)
+#define ENABLE_CONTROL_PANEL (true)
+#define ENABLE_DRIVER_CAMERAS (true)
 
 /* CUSTOM CLASS INSTANTIATION */
 DriveTrain driveTrain;

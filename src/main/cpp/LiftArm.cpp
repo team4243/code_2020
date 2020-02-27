@@ -121,7 +121,7 @@ void LiftArm::getLimits()
     // max_reached = (analogVoltage > 2000);
 
     double analogVoltage = Limit_High->GetVoltage();
-    max_reached = (analogVoltage > 2.5);
+    max_reached = false; //(analogVoltage > 2.5);
 
     min_reached = Limit_Low->Get();
 }

@@ -8,7 +8,7 @@
 
 /* TUNING VARIABLES */
 #define LOW_SPEED_SCALAR (0.05)
-#define HIGH_SPEED_SCALAR (0.25)
+#define HIGH_SPEED_SCALAR (0.35)
 
 #define WRITE_TALON_CONFIGURATIONS (false)
 #define DRIVE_JOYSTICK_DEADBAND (0.10)
@@ -158,20 +158,25 @@ void DriveTrain::commandChecks()
         pressedLastFrame_fieldMode = false;
 
     // Check for SLOW SPEED toggle and update dashboard
-    if (driver_one.GetRawButton(TOGGLE_SLOW_SPEED_BUTTON))
-    {
-        // Command button debounce
-        if (!pressedLastFrame_slowSpeed)
-        {
-            pressedLastFrame_slowSpeed = true;
+    // if (driver_one.GetRawButton(TOGGLE_SLOW_SPEED_BUTTON))
+    // {
+    //     // Command button debounce
+    //     if (!pressedLastFrame_slowSpeed)
+    //     {
+    //         pressedLastFrame_slowSpeed = true;
 
-            // Toggle the mode
-            useSlowSpeed = !useSlowSpeed;
-            allPrints();
-        }
-    }
+    //         // Toggle the mode
+    //         useSlowSpeed = !useSlowSpeed;
+    //         allPrints();
+    //     }
+    // }
+    // else
+    //     pressedLastFrame_slowSpeed = false;
+
+    if (driver_one.GetRawButton(TOGGLE_SLOW_SPEED_BUTTON))
+        pressedLastFrame_slowSpeed = true;
     else
-        pressedLastFrame_slowSpeed = false;
+         pressedLastFrame_slowSpeed = false;
 
     // Gyro functions for FIELD MODE
     if (useFieldMode)

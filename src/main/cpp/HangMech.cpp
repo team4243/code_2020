@@ -24,7 +24,7 @@
 #define RIGHT_HIGH_DIO_CHANNEL_NUM (1)
 
 /* DIO (DIGITAL) CHANNEL NUMBERS (0 - 9)*/
-#define LEFT_LOW_DIO_CHANNEL_NUM (0) 
+#define LEFT_LOW_DIO_CHANNEL_NUM (0)
 #define RIGHT_LOW_DIO_CHANNEL_NUM (1)
 
 /* MOTOR DEFINITIONS*/
@@ -58,6 +58,8 @@ LiftArm RightArm;
 
 void HangMech::Init()
 {
+    TeensyGyro::Reset();
+
     useAutoHang = false;
     pressedLastFrame_autoHang = false;
 
@@ -71,7 +73,7 @@ void HangMech::Init()
 
     LeftArm.Limit_High = new frc::AnalogInput(LEFT_HIGH_DIO_CHANNEL_NUM);
     RightArm.Limit_High = new frc::AnalogInput(RIGHT_HIGH_DIO_CHANNEL_NUM);
-    
+
     LeftArm.Limit_Low = new frc::DigitalInput(LEFT_LOW_DIO_CHANNEL_NUM);
     RightArm.Limit_Low = new frc::DigitalInput(RIGHT_LOW_DIO_CHANNEL_NUM);
 
@@ -151,7 +153,7 @@ void HangMech::hangPercentOutput()
     // Determine change in error (degrees per cycle)
     double errorChange = errorLast - errorCurrent;
 
-    // Compute control term corrections 
+    // Compute control term corrections
     double proportional = PROPORTIONAL_CONTROL * errorCurrent;
     double derivative = DERIVATIVE_CONTROL * errorChange;
 
@@ -198,6 +200,11 @@ void HangMech::commandChecks()
     }
     else
         pressedLastFrame_autoHang = false;
+
+    if (driver_two.GetRawButton(HANG_GYRO_ZERO_BUTTON_1) && driver_two.GetRawButton(HANG_GYRO_ZERO_BUTTON_2))
+    {
+        TeensyGyro::Reset();
+    }
 }
 
 void HangMech::allPrints()
