@@ -1,7 +1,9 @@
-// #include "CustomClasses.h"
+#include "CustomClasses.h"
 
 // #include <frc/DriverStation.h>
 // #include <frc/smartdashboard/smartdashboard.h>
+#include "frc/util/Color.h"
+#include "frc/DriverStation.h"
 
 // ColorSensorInterface::ColorSensorInterface()
 // {
@@ -54,7 +56,7 @@
 // std::string ColorSensorInterface::getColorFromFMS()
 // {
 //     std::string gameData;
-//     gameData = frc::DriverStation::GetInstance().GetGameSpecificMessage();
+    //gameData = frc::DriverStation::GetInstance().GetGameSpecificMessage();
 
 //     if (gameData.length() > 0)
 //     {

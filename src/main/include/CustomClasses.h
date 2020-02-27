@@ -11,12 +11,12 @@
 #include "frc/SerialPort.h"
 
 // #include <vector>
-// #include <stdio.h>
-// #include <string.h>
+// #include "stdio.h"
+#include "string.h"
 
-// #include "CIEColor.h"
-// #include "ColorMatch.h"
-// #include "ColorSensorV3.h"
+// #include "rev/CIEColor.h"
+// #include "rev/ColorMatch.h"
+// #include "rev/ColorSensorV3.h"
 
 #include "cscore_oo.h"
 
@@ -39,6 +39,7 @@
 #define MANUAL_HANG_RIGHT_AXIS (RIGHT_WHEEL_Y)
 #define HANG_GYRO_ZERO_BUTTON_1 (RIGHT_BUMPER)
 #define HANG_GYRO_ZERO_BUTTON_2 (Y_BUTTON)
+#define HANG_SLOW_MODE (LEFT_TRIGGER)
 
 /* COMMAND BUTTON MAPPING -- CONTROL PANEL */
 #define TOGGLE_CONTROL_PANEL_AUTO (BACK_BUTTON)
@@ -49,8 +50,6 @@
 /* JOYSTICKS CONFIGURATION */
 #define PORT_JOYSTICK_DRIVER_ONE (0)
 #define PORT_JOYSTICK_DRIVER_TWO (1)
-
-#define INITIAL_VECTOR_SIZE (300)
 
 /* STATIC JOYSTICK INSTANTIATION */
 static frc::Joystick driver_one{PORT_JOYSTICK_DRIVER_ONE};
@@ -74,7 +73,7 @@ private:
   void writeTalonConfigs();
 
   bool useSlowSpeed = false;
-  bool pressedLastFrame_slowSpeed = false;
+  // bool pressedLastFrame_slowSpeed = false;
 
   bool useFieldMode = false;
   bool pressedLastFrame_fieldMode = false;
@@ -102,6 +101,7 @@ private:
 
   bool useAutoHang = false;
   bool pressedLastFrame_autoHang = false;
+  bool useSlowSpeed = false;
 
   double speedCurrent = 0;
   double errorLast = 0;
@@ -159,9 +159,9 @@ public:
   void Turn();
 
 private:
-  // std::string first_colour = "";
-  // std::string previous_colour = "";
-  // std::string current_mode = "";
+  std::string first_colour = "";
+  std::string previous_colour = "";
+  std::string current_mode = "";
 
   int confidence_count = 0;
   int num_colour_changed = 0;
@@ -182,30 +182,31 @@ private:
   void countTurns();
   void commandChecks();
   void writeTalonConfigs();
+  void printStuff();
 };
 
 // class ColorSensorInterface
 // {
 // public:
-//   // ColorSensorInterface();
-//   // ~ColorSensorInterface();
-//   // std::string GetColorFromSensor(double);
-//   // bool ColorMatchesColorFromFMS();
+//   ColorSensorInterface();
+//   ~ColorSensorInterface();
+//   std::string GetColorFromSensor(double);
+//   bool ColorMatchesColorFromFMS();
 
 // private:
-//   // std::shared_ptr<rev::ColorSensorV3> colorSensor;
+//   std::shared_ptr<rev::ColorSensorV3> colorSensor;
 
-//   // static constexpr frc::Color kBlueTarget = frc::Color(0.143, 0.427, 0.429);
-//   // static constexpr frc::Color kGreenTarget = frc::Color(0.197, 0.561, 0.240);
-//   // static constexpr frc::Color kRedTarget = frc::Color(0.561, 0.232, 0.114);
-//   // static constexpr frc::Color kYellowTarget = frc::Color(0.361, 0.524, 0.113);
-//   // rev::ColorMatch m_colorMatcher;
+//   static constexpr frc::Color kBlueTarget = frc::Color(0.143, 0.427, 0.429);
+//   static constexpr frc::Color kGreenTarget = frc::Color(0.197, 0.561, 0.240);
+//   static constexpr frc::Color kRedTarget = frc::Color(0.561, 0.232, 0.114);
+//   static constexpr frc::Color kYellowTarget = frc::Color(0.361, 0.524, 0.113);
+//   rev::ColorMatch m_colorMatcher;
 
-//   // std::string colorFromFMS;
-//   // std::string getColorFromFMS();
+//   std::string colorFromFMS;
+//   std::string getColorFromFMS();
 // };
 
-/****************************************** TEENSY GYRO ******************************************/
+// /****************************************** TEENSY GYRO ******************************************/
 class TeensyGyro
 {
 public:

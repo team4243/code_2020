@@ -173,11 +173,8 @@ void DriveTrain::commandChecks()
     // else
     //     pressedLastFrame_slowSpeed = false;
 
-    if (driver_one.GetRawButton(TOGGLE_SLOW_SPEED_BUTTON))
-        pressedLastFrame_slowSpeed = true;
-    else
-         pressedLastFrame_slowSpeed = false;
-
+    useSlowSpeed = driver_one.GetRawButton(TOGGLE_SLOW_SPEED_BUTTON);
+ 
     // Gyro functions for FIELD MODE
     if (useFieldMode)
     {

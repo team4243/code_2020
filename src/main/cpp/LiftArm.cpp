@@ -50,9 +50,6 @@ void LiftArm::ManualHangPercentOutput(double joystickInput)
     // Deadband
     joystickInput = Utils::DeadBand(joystickInput, HANG_JOYSTICK_DEADBAND);
 
-    // Scale
-    joystickInput *= MANUAL_HANG_SPEED;
-
     // Update position
     UpdateSpeed(joystickInput);
 }

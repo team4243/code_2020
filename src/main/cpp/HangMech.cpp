@@ -49,8 +49,11 @@
 #define PROPORTIONAL_CONTROL (0.01)
 #define DERIVATIVE_CONTROL (0.001)
 #define FEED_FORWARD_CONTROL (0)
-#define SPEED_SCALAR (0.5)
 #define TARGET_HANG_ANGLE (0.0)
+
+#define HIGH_SPEED_SCALAR (0.5)
+#define LOW_SPEED_SCALAR (0.15)
+#define AUTO_SPEED_SCALAR (0.5)
 
 /* LIFT ARM OBJECTS */
 LiftArm LeftArm;
@@ -112,8 +115,9 @@ void HangMech::Hang()
         }
         else
         {
-            LeftArm.ManualHangPercentOutput(driver_two.GetRawAxis(MANUAL_HANG_LEFT_AXIS));
-            RightArm.ManualHangPercentOutput(driver_two.GetRawAxis(MANUAL_HANG_RIGHT_AXIS));
+            double speedScalar =(double)(useSlowSpeed ? LOW_SPEED_SCALAR : HIGH_SPEED_SCALAR);
+            LeftArm.ManualHangPercentOutput(driver_two.GetRawAxis(MANUAL_HANG_LEFT_AXIS) * speedScalar);
+            RightArm.ManualHangPercentOutput(driver_two.GetRawAxis(MANUAL_HANG_RIGHT_AXIS) * speedScalar);
         }
     }
 
@@ -166,7 +170,7 @@ void HangMech::hangPercentOutput()
     // Constrain
     speedNew = Utils::Constrain(speedNew, -1, 1);
 
-    speedNew *= SPEED_SCALAR;
+    speedNew *= AUTO_SPEED_SCALAR;
 
     LeftArm.UpdateSpeed(speedNew);
     RightArm.UpdateSpeed(-speedNew);
@@ -200,6 +204,8 @@ void HangMech::commandChecks()
     }
     else
         pressedLastFrame_autoHang = false;
+
+    useSlowSpeed = driver_two.GetRawAxis(HANG_SLOW_MODE) > 0.5;
 
     if (driver_two.GetRawButton(HANG_GYRO_ZERO_BUTTON_1) && driver_two.GetRawButton(HANG_GYRO_ZERO_BUTTON_2))
     {
