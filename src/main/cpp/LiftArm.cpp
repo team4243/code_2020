@@ -118,11 +118,13 @@ void LiftArm::getLimits()
     if (USE_LIMIT_HIGH_ALT)
         max_reached = (Limit_High_Alt->GetValue() < 2000);
     else
+    {
         max_reached = Limit_High->Get();
+    }
 
-    // min_reached = false; // Limit_Low->Get();
-    if (motor_current > 40)
-        min_reached = true;
-    else if (motor_current < -1)
-        min_reached = false;
+    min_reached = false; // Limit_Low->Get();
+    // if (motor_current > 40)
+    //     min_reached = true;
+    // else if (motor_current < -1)
+    //     min_reached = false;
 }

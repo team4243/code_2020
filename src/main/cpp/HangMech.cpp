@@ -125,13 +125,13 @@ void HangMech::Hang(double angle)
             double speedScalar = (double)(useSlowSpeed ? LOW_SPEED_SCALAR : HIGH_SPEED_SCALAR);
             if (driver_two.GetRawButton(Y_BUTTON))
             {
-                LeftArm.ManualHangPercentOutput(-0.5 * speedScalar);
-                RightArm.ManualHangPercentOutput(-0.5 * speedScalar);
+                LeftArm.ManualHangPercentOutput(0.5 * speedScalar);
+                RightArm.ManualHangPercentOutput(0.5 * speedScalar);
             }
             else if (driver_two.GetRawButton(A_BUTTON))
             {
-                LeftArm.ManualHangPercentOutput(0.5 * speedScalar);
-                RightArm.ManualHangPercentOutput(0.5 * speedScalar);
+                LeftArm.ManualHangPercentOutput(-0.5 * speedScalar);
+                RightArm.ManualHangPercentOutput(-0.5 * speedScalar);
             }
             else
             {

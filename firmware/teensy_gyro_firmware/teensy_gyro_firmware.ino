@@ -31,7 +31,12 @@ void setup()
 
 void loop(void)
 {
-  while (Serial.available()) Serial.read();
+  if (Serial.available())
+  {
+    delay(100);
+    while (Serial.available()) Serial.read();
+    _reboot_Teensyduino_();
+  }
 
   accelmag.getEvent(&accel_event);
 

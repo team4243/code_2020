@@ -2,15 +2,19 @@
 
 #include <iostream>
 
+#include "frc/Timer.h"
 #include "frc/SerialPort.h"
 #include "frc/smartdashboard/SmartDashboard.h"
 
 int angleMeasurement;
 
 frc::SerialPort TeensyPort{115200, frc::SerialPort::kUSB};
+frc::Timer TeensyTimer;
 
 void TeensyGyro::Reset()
 {
+    TeensyPort.Reset();
+    // Timer.delay(0.020);
     TeensyPort.Write("!!!!");
 }
 
