@@ -7,19 +7,11 @@
 
 int angleMeasurement;
 
-frc::SerialPort *TeensyPort;
+frc::SerialPort TeensyPort{115200, frc::SerialPort::kUSB};
 
 void TeensyGyro::Reset()
 {
-    try
-    {
-        TeensyPort = new frc::SerialPort(115200, frc::SerialPort::kUSB1);
-        frc::SmartDashboard::PutString("Hang Gyro Status:", "Connected");
-    }
-    catch (const std::exception &e)
-    {
-        frc::SmartDashboard::PutString("Hang Gyro Status:", "DISCONNECTED");
-    }
+    TeensyPort.Write("!!!!");
 }
 
 int TeensyGyro::GetAngleMeasurement()
@@ -43,26 +35,26 @@ void TeensyGyro::ProcessSerialData()
         unsigned int index = 0;
 
         // Wait until buffer has data
-        if (TeensyPort->GetBytesReceived() > 0)
+        if (TeensyPort.GetBytesReceived() > 0)
         {
             char next_character[1];
-            TeensyPort->Read(next_character, 1);
+            TeensyPort.Read(next_character, 1);
 
             // Check for the start character
             if (next_character[0] == start_character)
             {
                 // Dummy loop to allow buffer time to fill
                 long breakoutCount = 0;
-                while (TeensyPort->GetBytesReceived() < 3)
+                while (TeensyPort.GetBytesReceived() < 3)
                 {
                     if (++breakoutCount > 100000)
                         break;
                 }
 
                 // Parse out until newline character reached
-                while (TeensyPort->GetBytesReceived() > 0)
+                while (TeensyPort.GetBytesReceived() > 0)
                 {
-                    TeensyPort->Read(next_character, 1);
+                    TeensyPort.Read(next_character, 1);
 
                     if (next_character[0] == '\0')
                         break;

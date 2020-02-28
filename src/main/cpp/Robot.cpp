@@ -14,11 +14,12 @@ DriveTrain driveTrain;
 HangMech hangMech;
 ControlPanel controlPanel;
 DriverCameras driverCameras;
+TeensyGyro teensyGyro;
 
 /******************** ROBOT INIT ********************/
 void Robot::RobotInit()
 {
-    TeensyGyro::Reset();
+    teensyGyro.Reset();
 
     if (ENABLE_DRIVER_CAMERAS)
         driverCameras.Init();
@@ -28,15 +29,7 @@ void Robot::RobotInit()
 void Robot::RobotPeriodic()
 {
     if (ENABLE_HANG_MECH)
-    {
-        TeensyGyro::ProcessSerialData();
-
-        // Get gyro angle
-        double angle = TeensyGyro::GetAngleMeasurement(); // degrees
-
-        // Print gyro angle
-        frc::SmartDashboard::PutNumber("Hang Gyro:", angle);
-    }
+        teensyGyro.ProcessSerialData();
 }
 
 /******************** AUTONOMOUS INIT ********************/
@@ -71,6 +64,8 @@ void Robot::AutonomousPeriodic()
 
 void Robot::TeleopInit()
 {
+    teensyGyro.Reset();
+
     if (ENABLE_DRIVE_TRAIN)
     {
         driveTrain.Init();
@@ -91,7 +86,7 @@ void Robot::TeleopPeriodic()
         driveTrain.Drive();
 
     if (ENABLE_HANG_MECH)
-        hangMech.Hang();
+        hangMech.Hang((double)teensyGyro.GetAngleMeasurement());
 
     if (ENABLE_CONTROL_PANEL)
         controlPanel.Turn();

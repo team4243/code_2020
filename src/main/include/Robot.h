@@ -13,4 +13,6 @@ public:
   void TeleopPeriodic() override;
   void TestPeriodic() override;
 
+private:
+  double angle = 0;
 };

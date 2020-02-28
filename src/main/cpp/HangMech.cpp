@@ -62,7 +62,7 @@ LiftArm RightArm;
 
 void HangMech::Init()
 {
-    TeensyGyro::Reset();
+    // TeensyGyro::Reset();
 
     useAutoHang = false;
     pressedLastFrame_autoHang = false;
@@ -91,7 +91,7 @@ void HangMech::Init()
         writeTalonConfigs();
 }
 
-void HangMech::Hang()
+void HangMech::Hang(double angle)
 {
     // Check for driver commands
     commandChecks();
@@ -103,12 +103,15 @@ void HangMech::Hang()
     LeftArm.UpdateMotorCurrent();
     RightArm.UpdateMotorCurrent();
 
+    // Print gyro angle
+    frc::SmartDashboard::PutNumber("Hang Gyro:", angle);
+
     if (useAutoHang) // AUTO
     {
         if (USE_POSITION_CONTROL)
             hangPosition();
         else
-            hangPercentOutput();
+            hangPercentOutput(angle);
     }
     else // MANUAL
     {
@@ -155,7 +158,7 @@ void HangMech::Hang()
 void HangMech::hangPosition()
 {
     // Get gyro angle
-    double angle = TeensyGyro::GetAngleMeasurement(); // degrees
+    double angle = 0; //TeensyGyro::GetAngleMeasurement(); // degrees
 
     // Computation stuff, ya know... math
     double speed = AUTO_HANG_SPEED * angle; // degrees per second
@@ -174,10 +177,10 @@ void HangMech::hangPosition()
     frc::SmartDashboard::PutNumber("RIGHT Position:", RightArm.current_position);
 }
 
-void HangMech::hangPercentOutput()
+void HangMech::hangPercentOutput(double angle)
 {
     // Get the sensor measurement (in degrees)
-    double angle = TeensyGyro::GetAngleMeasurement();
+    //double angle = 0;//TeensyGyro::GetAngleMeasurement();
 
     // Determine the error (also in degrees)
     double errorCurrent = TARGET_HANG_ANGLE - angle;
@@ -207,10 +210,10 @@ void HangMech::hangPercentOutput()
     speedCurrent = speedNew;
 
     // Print gyro angle
-    frc::SmartDashboard::PutNumber("Hang Gyro:", angle);
+    // frc::SmartDashboard::PutNumber("Hang Gyro:", angle);
 
     // Print custom PID values
-    frc::SmartDashboard::PutNumber("Current Speed:", speedCurrent);
+    // frc::SmartDashboard::PutNumber("Current Speed:", speedCurrent);
 }
 
 void HangMech::commandChecks()
@@ -251,10 +254,10 @@ void HangMech::commandChecks()
     else
         pressedLastFrame_slowSpeed = false;
 
-    if (driver_two.GetRawButton(HANG_GYRO_RESET_BUTTON_1) && driver_two.GetRawButton(HANG_GYRO_RESET_BUTTON_2))
-    {
-        TeensyGyro::Reset();
-    }
+    // if (driver_two.GetRawButton(HANG_GYRO_RESET_BUTTON_1) && driver_two.GetRawButton(HANG_GYRO_RESET_BUTTON_2))
+    // {
+    //     TeensyGyro::Reset();
+    // }
 
     if (driver_two.GetRawButtonReleased(TOGGLE_DUAL_MOVE))
         dual_move = !dual_move;

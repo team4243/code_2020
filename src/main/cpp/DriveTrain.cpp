@@ -8,10 +8,10 @@
 
 /* TUNING VARIABLES */
 #define LOW_SPEED_SCALAR (0.25)
-#define HIGH_SPEED_SCALAR (0.75)
+#define HIGH_SPEED_SCALAR (0.90)
 #define ROTATION_SCALAR (0.50)
 
-#define WRITE_TALON_CONFIGURATIONS (false)
+#define WRITE_TALON_CONFIGURATIONS (true)
 #define DRIVE_JOYSTICK_DEADBAND (0.10)
 
 /*AUTO PERIODIC DRIVE */
@@ -33,8 +33,8 @@
 #define DRIVE_FRONT_LEFT_FOLLOWER (56)
 
 /* TALON SRX CONFIGURATION */
-#define DRIVE_PEAK_OUTPUT_FWD (0.35)   // (0 --> 1)
-#define DRIVE_PEAK_OUTPUT_REV (-0.35)  // (-1 --> 0)
+#define DRIVE_PEAK_OUTPUT_FWD (0.75)   // (0 --> 1)
+#define DRIVE_PEAK_OUTPUT_REV (-0.75)  // (-1 --> 0)
 #define DRIVE_PROPORTIONAL_CTRL (0.01) // PID "P Gain"
 #define DRIVE_DERIVATIVE_CTRL (0.001)  // PID "D Gain"
 #define DRIVE_FEED_FWD_CTRL (0)        // PID "F Gain"

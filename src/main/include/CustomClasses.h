@@ -93,11 +93,11 @@ class HangMech
 {
 public:
   void Init();
-  void Hang();
+  void Hang(double);
 
 private:
   void hangPosition();
-  void hangPercentOutput();
+  void hangPercentOutput(double);
 
   void commandChecks();
   void allPrints();
@@ -105,6 +105,7 @@ private:
 
   bool useAutoHang = false;
   bool pressedLastFrame_autoHang = false;
+  
   bool useSlowSpeed = false;
   bool pressedLastFrame_slowSpeed = false;
 
@@ -231,9 +232,9 @@ private:
 class TeensyGyro
 {
 public:
-  static void Reset();
-  static void ProcessSerialData();
-  static int GetAngleMeasurement();
+  void Reset();
+  void ProcessSerialData();
+  int GetAngleMeasurement();
 };
 
 /****************************************** UTILITIES ******************************************/
