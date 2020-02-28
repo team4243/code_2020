@@ -20,12 +20,14 @@
 #define HEIGHT_PER_REVOLUTION (0.5 * 1)
 
 /* AIO (ANALOG) CHANNEL NUMBERS (0 - 3)*/
-#define LEFT_HIGH_DIO_CHANNEL_NUM (0)
-#define RIGHT_HIGH_DIO_CHANNEL_NUM (1)
+// #define LEFT_HIGH_DIO_CHANNEL_NUM (3)
+// #define RIGHT_HIGH_DIO_CHANNEL_NUM (4)
 
 /* DIO (DIGITAL) CHANNEL NUMBERS (0 - 9)*/
 #define LEFT_LOW_DIO_CHANNEL_NUM (0)
 #define RIGHT_LOW_DIO_CHANNEL_NUM (1)
+#define LEFT_HIGH_DIO_CHANNEL_NUM (2)
+#define RIGHT_HIGH_DIO_CHANNEL_NUM (3)
 
 /* MOTOR DEFINITIONS*/
 #define LIFT_LEFT_LEADER (16)
@@ -37,8 +39,8 @@
 #define LIFT_RIGHT_FOLLOWER (60)
 
 /* TALON CONFIGURATION */
-#define HANG_PEAK_OUTPUT_FWD (1)
-#define HANG_PEAK_OUTPUT_REV (-1)
+#define HANG_PEAK_OUTPUT_FWD (.75)
+#define HANG_PEAK_OUTPUT_REV (-.75)
 #define HANG_PROPORTIONAL_CTRL (0.25)
 #define HANG_DERIVATIVE_CTRL (10)
 #define HANG_FEED_FWD_CTRL (0.0)
@@ -75,6 +77,9 @@ void HangMech::Init()
 
     LeftArm.Limit_High = new frc::DigitalInput(LEFT_HIGH_DIO_CHANNEL_NUM);
     RightArm.Limit_High = new frc::DigitalInput(RIGHT_HIGH_DIO_CHANNEL_NUM);
+
+    LeftArm.Limit_High_Alt = new frc::AnalogInput(LEFT_HIGH_DIO_CHANNEL_NUM);
+    RightArm.Limit_High_Alt = new frc::AnalogInput(RIGHT_HIGH_DIO_CHANNEL_NUM);
 
     LeftArm.Limit_Low = new frc::DigitalInput(LEFT_LOW_DIO_CHANNEL_NUM);
     RightArm.Limit_Low = new frc::DigitalInput(RIGHT_LOW_DIO_CHANNEL_NUM);
@@ -115,8 +120,32 @@ void HangMech::Hang()
         else
         {
             double speedScalar = (double)(useSlowSpeed ? LOW_SPEED_SCALAR : HIGH_SPEED_SCALAR);
-            LeftArm.ManualHangPercentOutput(driver_two.GetRawAxis(MANUAL_HANG_LEFT_AXIS) * speedScalar);
-            RightArm.ManualHangPercentOutput(driver_two.GetRawAxis(MANUAL_HANG_RIGHT_AXIS) * speedScalar);
+            if (driver_two.GetRawButton(Y_BUTTON))
+            {
+                LeftArm.ManualHangPercentOutput(-0.5 * speedScalar);
+                RightArm.ManualHangPercentOutput(-0.5 * speedScalar);
+            }
+            else if (driver_two.GetRawButton(A_BUTTON))
+            {
+                LeftArm.ManualHangPercentOutput(0.5 * speedScalar);
+                RightArm.ManualHangPercentOutput(0.5 * speedScalar);
+            }
+            else
+            {
+                LeftArm.ManualHangPercentOutput(driver_two.GetRawAxis(MANUAL_HANG_LEFT_AXIS) * speedScalar);
+                RightArm.ManualHangPercentOutput(driver_two.GetRawAxis(MANUAL_HANG_RIGHT_AXIS) * speedScalar);
+            }
+
+            // if (!dual_move)
+            // {
+            //     LeftArm.ManualHangPercentOutput(driver_two.GetRawAxis(MANUAL_HANG_LEFT_AXIS) * speedScalar);
+            //     RightArm.ManualHangPercentOutput(driver_two.GetRawAxis(MANUAL_HANG_RIGHT_AXIS) * speedScalar);
+            // }
+            // else
+            // {
+            //     LeftArm.ManualHangPercentOutput(driver_two.GetRawAxis(MANUAL_HANG_LEFT_AXIS) * speedScalar);
+            //     LeftArm.ManualHangPercentOutput(driver_two.GetRawAxis(MANUAL_HANG_LEFT_AXIS) * speedScalar);
+            // }
         }
     }
 
@@ -226,6 +255,9 @@ void HangMech::commandChecks()
     {
         TeensyGyro::Reset();
     }
+
+    if (driver_two.GetRawButtonReleased(TOGGLE_DUAL_MOVE))
+        dual_move = !dual_move;
 }
 
 void HangMech::allPrints()

@@ -9,16 +9,17 @@
 /* TUNING VARIABLES */
 #define LOW_SPEED_SCALAR (0.25)
 #define HIGH_SPEED_SCALAR (0.75)
+#define ROTATION_SCALAR (0.50)
 
 #define WRITE_TALON_CONFIGURATIONS (false)
 #define DRIVE_JOYSTICK_DEADBAND (0.10)
 
 /*AUTO PERIODIC DRIVE */
-#define AUTO_MOVEMENT_DURATION (3.0)
+#define AUTO_MOVEMENT_DURATION (2.0)
 #define LOOP_FREQUENCY (50)
 #define AUTO_MOVEMENT_ITERATIONS (AUTO_MOVEMENT_DURATION * LOOP_FREQUENCY)
-#define AUTO_MOVE (0.5)
-#define AUTO_TWIRL (0.2)
+#define AUTO_MOVE (0.2)
+#define AUTO_TWIRL (0.0)
 
 /* MOTOR CONTROLLERS CAN DEVICE NUMBERS */
 #define DRIVE_REAR_RIGHT_LEADER (12)
@@ -65,6 +66,8 @@ void DriveTrain::AutoInit()
 
 void DriveTrain::Init()
 {
+    useSlowSpeedDrive = false;
+
     // Write Talon configuration if SET
     if (WRITE_TALON_CONFIGURATIONS)
         writeTalonConfigs();
@@ -109,7 +112,7 @@ void DriveTrain::Drive()
     joystick_Z = Utils::DeadBand(joystick_Z, DRIVE_JOYSTICK_DEADBAND);
 
     // Scale the input for desired speed
-    if (useSlowSpeed)
+    if (useSlowSpeedDrive)
     {
         joystick_X *= LOW_SPEED_SCALAR;
         joystick_Y *= LOW_SPEED_SCALAR;
@@ -126,6 +129,8 @@ void DriveTrain::Drive()
     joystick_X = Utils::Constrain(joystick_X, -1, 1);
     joystick_Y = Utils::Constrain(joystick_Y, -1, 1);
     joystick_Z = Utils::Constrain(joystick_Z, -1, 1);
+
+    joystick_Z *= ROTATION_SCALAR;
 
     // Field mode uses the GYRO YAW as an input
     if (useFieldMode)
@@ -161,17 +166,17 @@ void DriveTrain::commandChecks()
     if (driver_one.GetRawButton(TOGGLE_SLOW_SPEED_BUTTON))
     {
         // Command button debounce
-        if (!pressedLastFrame_slowSpeed)
+        if (!pressedLastFrame_slowSpeedDrive)
         {
-            pressedLastFrame_slowSpeed = true;
+            pressedLastFrame_slowSpeedDrive = true;
 
             // Toggle the mode
-            useSlowSpeed = !useSlowSpeed;
+            useSlowSpeedDrive = !useSlowSpeedDrive;
             allPrints();
         }
     }
     else
-        pressedLastFrame_slowSpeed = false;
+        pressedLastFrame_slowSpeedDrive = false;
 
     // useSlowSpeed = driver_one.GetRawAxis(TOGGLE_SLOW_SPEED_BUTTON) > 0.5;
  
@@ -196,7 +201,7 @@ void DriveTrain::allPrints()
     frc::SmartDashboard::PutString("Drive Mode:", (useFieldMode ? "FIELD MODE" : "BODY MODE"));
 
     // Print the SPEED mode
-    frc::SmartDashboard::PutString("Drive Speed:", (useSlowSpeed ? "SLOW" : "FAST"));
+    frc::SmartDashboard::PutString("Drive Speed:", (useSlowSpeedDrive ? "SLOW" : "FAST"));
 }
 
 void DriveTrain::writeTalonConfigs()

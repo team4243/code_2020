@@ -43,6 +43,7 @@
 #define HANG_GYRO_RESET_BUTTON_1 (RIGHT_BUMPER)
 #define HANG_GYRO_RESET_BUTTON_2 (Y_BUTTON)
 #define HANG_SLOW_MODE (RIGHT_BUMPER)
+#define TOGGLE_DUAL_MOVE (A_BUTTON)
 
 /* COMMAND BUTTON MAPPING -- CONTROL PANEL */
 #define TOGGLE_CONTROL_PANEL_AUTO (BACK_BUTTON)
@@ -75,8 +76,8 @@ private:
   void commandChecks();
   void writeTalonConfigs();
 
-  bool useSlowSpeed = false;
-  bool pressedLastFrame_slowSpeed = false;
+  bool useSlowSpeedDrive = false;
+  bool pressedLastFrame_slowSpeedDrive = false;
 
   bool useFieldMode = false;
   bool pressedLastFrame_fieldMode = false;
@@ -107,6 +108,8 @@ private:
   bool useSlowSpeed = false;
   bool pressedLastFrame_slowSpeed = false;
 
+  bool dual_move = false;
+
   double speedCurrent = 0;
   double errorLast = 0;
 };
@@ -126,6 +129,8 @@ public:
 
   WPI_TalonSRX *Lift_Leader;
   WPI_TalonSRX *Lift_Follower;
+
+  frc::AnalogInput *Limit_High_Alt;
 
   frc::DigitalInput *Limit_High;
   frc::DigitalInput *Limit_Low;

@@ -13,6 +13,8 @@
 #define COUNTS_PER_REVOLUTION (4096)
 #define MAX_ENCODER_VALUE (123456789)
 
+#define USE_LIMIT_HIGH_ALT (false)
+
 void LiftArm::Init()
 {
     current_position = 0;
@@ -113,12 +115,10 @@ void LiftArm::UpdateMotorCurrent()
 
 void LiftArm::getLimits()
 {
-    // Get the limit switch readings
-    // int analogRead = Limit_High->GetValue();
-    // max_reached = (analogVoltage > 2000);
-
-    // double analogVoltage = Limit_High->GetVoltage();
-    max_reached = !(Limit_High->Get()); //(analogVoltage > 2.5);
+    if (USE_LIMIT_HIGH_ALT)
+        max_reached = (Limit_High_Alt->GetValue() < 2000);
+    else
+        max_reached = Limit_High->Get();
 
     min_reached = Limit_Low->Get();
 }
