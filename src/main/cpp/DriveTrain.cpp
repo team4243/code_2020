@@ -6,9 +6,13 @@
 #include "ctre/Phoenix.h"
 #include "AHRS.h"
 
+#include <math.h>
+
 /* TUNING VARIABLES */
 #define LOW_SPEED_SCALAR (0.25)
 #define HIGH_SPEED_SCALAR (0.90)
+
+#define TRANSLATION_SCALAR (0.75)
 #define ROTATION_SCALAR (0.50)
 
 #define WRITE_TALON_CONFIGURATIONS (true)
@@ -130,13 +134,41 @@ void DriveTrain::Drive()
     joystick_Y = Utils::Constrain(joystick_Y, -1, 1);
     joystick_Z = Utils::Constrain(joystick_Z, -1, 1);
 
-    joystick_Z *= ROTATION_SCALAR;
+    // joystick_Y *= TRANSLATION_SCALAR;
+    // joystick_Z *= ROTATION_SCALAR;
 
     // Field mode uses the GYRO YAW as an input
     if (useFieldMode)
         mecanumDrive.DriveCartesian(joystick_X, joystick_Y, joystick_Z, gyroYaw);
     else
-        mecanumDrive.DriveCartesian(joystick_X, joystick_Y, joystick_Z);
+    {
+        //mecanumDrive.DriveCartesian(joystick_X, joystick_Y, joystick_Z);
+
+        double scalar = hypot(joystick_X, joystick_Y);
+        double direction = atan2(joystick_Y, joystick_X) - (M_PI / 4);
+
+        double speed_frontLeft = scalar * cos(direction) + joystick_Z;
+        double speed_frontRight = scalar * sin(direction) - joystick_Z;
+        double speed_rearLeft = scalar * sin(direction) + joystick_Z;
+        double speed_rearRight = scalar * cos(direction) - joystick_Z;
+
+        leftFront_Leader.Set(ControlMode::PercentOutput, speed_frontLeft);
+        rightFront_Leader.Set(ControlMode::PercentOutput, -speed_frontRight * (0.75));
+        leftRear_Leader.Set(ControlMode::PercentOutput, speed_rearLeft * (0.75));
+        rightRear_Leader.Set(ControlMode::PercentOutput, -speed_rearRight * (0.75));
+    }
+
+    // frc::SmartDashboard::PutNumber("Left F L:", leftFront_Leader.GetStatorCurrent());
+    // frc::SmartDashboard::PutNumber("Left F F:", leftFront_Follower.GetStatorCurrent());
+
+    // frc::SmartDashboard::PutNumber("Right F L:", rightFront_Leader.GetStatorCurrent());
+    // frc::SmartDashboard::PutNumber("Right F F:", rightFront_Follower.GetStatorCurrent());
+
+    // frc::SmartDashboard::PutNumber("Left R L:", leftRear_Leader.GetStatorCurrent());
+    // frc::SmartDashboard::PutNumber("Left R F:", leftRear_Follower.GetStatorCurrent());
+
+    // frc::SmartDashboard::PutNumber("Right R L:", rightRear_Leader.GetStatorCurrent());
+    // frc::SmartDashboard::PutNumber("Right R F:", rightRear_Follower.GetStatorCurrent());
 }
 
 void DriveTrain::Stop()
@@ -179,7 +211,7 @@ void DriveTrain::commandChecks()
         pressedLastFrame_slowSpeedDrive = false;
 
     // useSlowSpeed = driver_one.GetRawAxis(TOGGLE_SLOW_SPEED_BUTTON) > 0.5;
- 
+
     // Gyro functions for FIELD MODE
     if (useFieldMode)
     {

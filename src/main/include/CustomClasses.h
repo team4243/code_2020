@@ -143,6 +143,7 @@ public:
   double encoder_value = 0;
 
   double motor_current = 0;
+  
   double min_motor_current = 0;
   double max_motor_current = 0;
 
